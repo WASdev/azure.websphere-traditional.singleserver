@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "_artifactsLocation": {
+            "value": "${artifactsLocationBase}/src/main/"
+        },
+        "ibmUserId": {
+            "value": "${ibmUserId}"
+        },
+        "ibmUserPwd": {
+            "value": "${ibmUserPwd}"
+        },
+        "vmSize": {
+            "value": "${vmSize}"
+        },
+        "dnsLabelPrefix":{
+            "value": "${dnsLabelPrefix}"
+        },
+        "adminUsername": {
+            "value": "${adminUsername}"
+        },
+        "adminPasswordOrKey": {
+            "value": "${adminPasswordOrKey}"
+        },
+        "authenticationType": {
+            "value": "${authenticationType}"
+        },
+        "wasUsername": {
+            "value": "${wasUsername}"
+        },
+        "wasPassword": {
+            "value": "${wasPassword}"
+        }
+    }
+}
