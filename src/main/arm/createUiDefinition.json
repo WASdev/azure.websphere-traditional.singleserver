@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [
+            {
+                "name": "ibmIdInfo",
+                "type": "Microsoft.Common.InfoBox",
+                "options": {
+                    "icon": "Info",
+                    "text": "This offer is Bring-Your-Own-License. To deploy this offer, you must enter your registered IBM ID and your IBM ID must have active WebSphere entitlements associated with it. If provisioning fails due to lack of entitlements, ask the primary or secondary contacts for your IBM Passport Advantage site to grant you access or follow steps at <a href='https://ibm.biz/IBMidEntitlement' target='_blank'>IBM eCustomer Care</a> for further assistance. This offer also assumes you are properly licensed to run offers in Microsoft Azure."
+                }
+            },
+            {
+                "name": "ibmUserId",
+                "type": "Microsoft.Common.TextBox",
+                "label": "IBM ID",
+                "toolTip": "Your IBM ID.",
+                "constraints": {
+                    "required": true,
+                    "regex": "^(?!\\-)([a-z0-9A-Z@\\-]{1,128})([^\\-])",
+                    "validationMessage": "The value must be valid IBM ID."
+                }
+            },
+            {
+                "name": "ibmUserPwd",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                    "password": "Password for IBM ID",
+                    "confirmPassword": "Confirm password"
+                },
+                "toolTip": "Password for your IBM ID.",
+                "constraints": {
+                    "required": true
+                }
+            },
+            {
+                "name": "licenseInfo",
+                "type": "Microsoft.Common.InfoBox",
+                "options": {
+                    "icon": "Info",
+                    "text": "Accept the IBM License Agreement to proceed with the deployment. <a href='https://ibm.biz/tWASNDLicenseAzureVMs' target='_blank'>IBM WebSphere Application Server Network Deployment</a>."
+                }
+            },
+            {
+                "name": "acceptIBMLicenseAgreement",
+                "type": "Microsoft.Common.CheckBox",
+                "label": "I accept the IBM License Agreement.",
+                "toolTip": "Select to accept the IBM License Agreement.",
+                "constraints": {
+                    "required": true,
+                    "validationMessage": "The deployment will not proceed unless you accept the IBM License Agreement."
+                }
+            },
+            {
+                "name": "howToReportIssues",
+                "type": "Microsoft.Common.Section",
+                "label": "Report issues, get help, and share feedback",
+                "elements": [
+                    {
+                        "name": "howToReportIssueText",
+                        "type": "Microsoft.Common.TextBlock",
+                        "visible": true,
+                        "options": {
+                            "text": "If you encounter problems during deployment of WebSphere, please report them here.",
+                            "link": {
+                                "label": "Issue tracker",
+                                "uri": "https://aka.ms/azure-twas-singleserver-issues?version=${project.version}"
+                            }
+                        }
+                    },
+                    {
+                        "name": "howToReportVendorIssueText",
+                        "type": "Microsoft.Common.TextBlock",
+                        "visible": true,
+                        "options": {
+                            "text": "To use your existing IBM support contract, file an issue with IBM directly.",
+                            "link": {
+                                "label": "IBM support",
+                                "uri": "https://www.ibm.com/mysupport/"
+                            }
+                        }
+                    },
+                    {
+                        "name": "survey",
+                        "type": "Microsoft.Common.TextBlock",
+                        "visible": true,
+                        "options": {
+                            "text": "To get free help with Azure migration from the development team, fill out this survey.",
+                            "link": {
+                                "label": "Take survey",
+                                "uri": "https://aka.ms/ibm-stack-migration-survey"
+                            }
+                        }
+                    }
+                ],
+                "visible": true
+            }
+        ],
+        "steps": [
+            {
+                "name": "SingleServerConfig",
+                "label": "Server configuration",
+                "subLabel": {
+                    "preValidation": "Configure the resources and settings of the virtual machine that installs IBM WebSphere application server.",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Server configuration",
+                "elements": [
+                    {
+                        "name": "vmSizeSelect",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "VM size",
+                        "toolTip": "The size of virtual machine to provision.",
+                        "recommendedSizes": [
+                            "Standard_D2_v3",
+                            "Standard_A4_v2",
+                            "Standard_A2_v2",
+                            "Standard_A1_v2",
+                            "Standard_B2ms",
+                            "Standard_B2s",
+                            "Standard_B1ms"
+                        ],
+                        "constraints": {
+                            "excludedSizes": [
+                                "Standard_B1ls",
+                                "Standard_A0",
+                                "Basic_A0",
+                                "Standard_B1s"
+                            ]
+                        },
+                        "osPlatform": "Linux",
+                        "count": "1"
+                    },
+                    {
+                        "name": "dnsLabelPrefix",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "DNS label prefix",
+                        "toolTip": "The string to prepend to the DNS label, default is 'was'.",
+                        "defaultValue": "was",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{3,24}$",
+                            "validationMessage": "The prefix must be between 3 and 24 characters long and contain letters, numbers only."
+                        }
+                    },
+                    {
+                        "name": "adminUsername",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "VM administrator",
+                        "defaultValue": "websphere",
+                        "toolTip": "Use only letters and numbers.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{1,30}$",
+                            "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
+                        }
+                    },
+                    {
+                        "name": "adminPasswordOrKey",
+                        "type": "Microsoft.Compute.CredentialsCombo",
+                        "label": {
+                            "authenticationType": "Authentication type",
+                            "password": "Password for VM administrator",
+                            "confirmPassword": "Confirm password",
+                            "sshPublicKey": "SSH Public Key for VM administrator"
+                        },
+                        "toolTip": {
+                            "authenticationType": "Use user and password or SSH Public Key for authentication to the virtual machine."
+                        },
+                        "constraints": {
+                            "required": true
+                        },
+                        "options": {
+                            "hideConfirmation": false,
+                            "hidePassword": false
+                        },
+                        "osPlatform": "Linux"
+                    },
+                    {
+                        "name": "wasUsername",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "WebSphere administrator",
+                        "defaultValue": "wsadmin",
+                        "toolTip": "Use only allowed characters.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{1,30}$",
+                            "validationMessage": "The value must be 1-30 characters long and must only contain letters and numbers."
+                        }
+                    },
+                    {
+                        "name": "wasPassword",
+                        "type": "Microsoft.Common.PasswordBox",
+                        "label": {
+                            "password": "Password for WebSphere administrator",
+                            "confirmPassword": "Confirm password"
+                        },
+                        "toolTip": "Password for WebSphere administrator.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{12,}$",
+                            "validationMessage": "The password must contain at least 12 characters, with at least 1 uppercase letter, 1 lowercase letter and 1 number, and special characters are not allowed."
+                        }
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "location": "[location()]",
+            "ibmUserId": "[basics('ibmUserId')]",
+            "ibmUserPwd": "[basics('ibmUserPwd')]",
+            "vmSize": "[steps('SingleServerConfig').vmSizeSelect]",
+            "dnsLabelPrefix": "[steps('SingleServerConfig').dnsLabelPrefix]",
+            "adminUsername": "[steps('SingleServerConfig').adminUsername]",
+            "adminPasswordOrKey": "[if(equals(steps('SingleServerConfig').adminPasswordOrKey.authenticationType, 'password'), steps('SingleServerConfig').adminPasswordOrKey.password, steps('SingleServerConfig').adminPasswordOrKey.sshPublicKey)]",
+            "authenticationType": "[steps('SingleServerConfig').adminPasswordOrKey.authenticationType]",
+            "wasUsername": "[steps('SingleServerConfig').wasUsername]",
+            "wasPassword": "[steps('SingleServerConfig').wasPassword]"
+        }
+    }
+}
