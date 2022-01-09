@@ -40,7 +40,7 @@
                 "type": "Microsoft.Common.InfoBox",
                 "options": {
                     "icon": "Info",
-                    "text": "Accept the IBM License Agreement to proceed with the deployment. <a href='https://ibm.biz/tWASNDLicenseAzureVMs' target='_blank'>IBM WebSphere Application Server Network Deployment</a>."
+                    "text": "Accept the IBM License Agreement to proceed with the deployment. <a href='https://ibm.biz/tWASBaseLicenseAzureVMs' target='_blank'>IBM WebSphere Application Server</a>."
                 }
             },
             {
