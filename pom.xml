@@ -36,16 +36,16 @@
         <git.repo>WASdev</git.repo>
         <artifactsLocationBase>https://raw.githubusercontent.com/${git.repo}/${project.artifactId}/${git.tag}</artifactsLocationBase>
         <azure.apiVersion>2020-06-01</azure.apiVersion>
-        <customer.usage.attribution.id>pid-1a2a9b5a-6c82-42de-a938-9fdb6ffe8e55-partnercenter</customer.usage.attribution.id>
+        <customer.usage.attribution.id>pid-5d69db5c-7773-47d1-9455-890d05fb3c2b-partnercenter</customer.usage.attribution.id>
         <singleserver.start>0dd3f110-4c7f-5292-a624-954cc19f7c49</singleserver.start>
         <singleserver.end>b82321d6-35d9-5b24-b158-1d32a234bd71</singleserver.end>
         <!-- This is the "Partner ID" in Partner Center" -->
-        <image.publisher>microsoft_javaeeonazure_test</image.publisher>
+        <image.publisher>ibm-usa-ny-armonk-hq-6275750-ibmcloud-aiops</image.publisher>
         <!-- This is the twas "Offer ID" of the "Azure Virtual Machine" offer type -->
-        <twas.image.offer>2021-zheng-image-offer-preview</twas.image.offer>
+        <twas.image.offer>2022-01-06-twas-base-single-server</twas.image.offer>
         <!-- This is the twas "Plan ID" of the plan within the "Azure Virtual Machine" offer -->
-        <twas.image.sku>2021-zheng-rhel-with-was-base</twas.image.sku>
+        <twas.image.sku>2022-01-06-twas-single-server-base-image</twas.image.sku>
         <!-- This is the twas "Disk version" of the VM image of the plan within the "Azure Virtual Machine" offer -->
-        <twas.image.version>9.0.20211222</twas.image.version>
+        <twas.image.version>9.0.20220110</twas.image.version>
     </properties>
 </project>
