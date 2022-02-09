@@ -19,7 +19,7 @@
 
     <groupId>com.ibm.websphere.azure</groupId>
     <artifactId>azure.websphere-traditional.singleserver</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     
     <parent>
         <groupId>com.microsoft.azure.iaas</groupId>
@@ -46,6 +46,6 @@
         <!-- This is the twas "Plan ID" of the plan within the "Azure Virtual Machine" offer -->
         <twas.image.sku>2022-01-06-twas-single-server-base-image</twas.image.sku>
         <!-- This is the twas "Disk version" of the VM image of the plan within the "Azure Virtual Machine" offer -->
-        <twas.image.version>9.0.20220110</twas.image.version>
+        <twas.image.version>9.0.20220209</twas.image.version>
     </properties>
 </project>
