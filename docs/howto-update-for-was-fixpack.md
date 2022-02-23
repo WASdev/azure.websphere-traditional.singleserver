@@ -18,15 +18,17 @@ Please follow sections below in order to update the solution for next tWAS base 
    * Go to [Actions](https://github.com/WASdev/azure.websphere-traditional.image/actions) > Click `twas-base CICD` > Click to expand `Run workflow` > Click `Run workflow` > Refresh the page
 
 1. How to test the image, what testcases to run?
-   * The CI/CD has already contains tests to verify the entitlement check and tWAS installation, so basically it's good to go without manual tests.
+   * The CI/CD contains tests to verify the entitlement check and tWAS installation, so basically it's good to go without manual tests.
 
-1. How to publish the image in marketplace and who can do it?
+1. How to publish the image **as a hidden image** in marketplace and who can do it?
    1. Wait until the CI/CD workflow for `twas-base CICD` successfully completes > Click to open details of the workflow run > Scroll to the bottom of the page > Click `sasurl` to download the zip file `sasurl.zip` > Unzip and open file `sas-url.txt` > Find values for `osDiskSasUrl` and `dataDiskSasUrl`;
    1. Sign into [Microsoft Partner Center](https://partner.microsoft.com/dashboard/commercial-marketplace/overview):
       * Select the Directory `IBM-Alliance-Microsoft Partner Network-Global-Tenant`
       * Expand `Build solutions` and choose `Publish your solution`.  
       * Click to open the offer for `<date>-twas-base-single-server` base image
       * Click `Plan overview` the click to open the plan 
+      * **IMPORTANT** Click `Pricing and availability` to verify the plan is hidden from the marketplace
+         * Ensure the `Hide plan` checkbox is checked
       * Click `Technical configuration` 
       * Click `+ Add VM image` > Specify a new value for `Disk version`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
       * Select `SAS URI` > Copy and paste value of `osDiskSasUrl` for `twas-base` to the textbox `SAS URI` 
