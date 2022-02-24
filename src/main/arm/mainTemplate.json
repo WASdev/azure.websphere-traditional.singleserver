@@ -23,6 +23,12 @@
                 "description": "Location for all resources."
             }
         },
+        "useTrial": {
+            "type": "bool",
+            "metadata": {
+                "description": "Boolean value indicating, if use wants to deploy a tWAS single server for evaluation only."
+            }
+        },
         "ibmUserId": {
             "type": "string",
             "defaultValue": "",
@@ -136,7 +142,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "${azure.apiVersion}",
-            "name": "${singleserver.start}",
+            "name": "[if(parameters('useTrial'), '${singleserver.trial.start}', '${singleserver.start}')]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -281,7 +287,7 @@
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPasswordOrKey')]",
                     "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('const_linuxConfiguration'))]",
-                    "customData": "[base64(concat(parameters('ibmUserId'), ' ', parameters('ibmUserPwd')))]"
+                    "customData": "[base64(if(parameters('useTrial'), ' ', concat(parameters('ibmUserId'), ' ', parameters('ibmUserPwd'))))]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -340,7 +346,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "${azure.apiVersion}",
-            "name": "${singleserver.end}",
+            "name": "[if(parameters('useTrial'), '${singleserver.trial.end}', '${singleserver.end}')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('name_virtualMachine'), 'install')]"
             ],

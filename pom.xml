@@ -19,7 +19,7 @@
 
     <groupId>com.ibm.websphere.azure</groupId>
     <artifactId>azure.websphere-traditional.singleserver</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
     
     <parent>
         <groupId>com.microsoft.azure.iaas</groupId>
@@ -39,6 +39,8 @@
         <customer.usage.attribution.id>pid-5d69db5c-7773-47d1-9455-890d05fb3c2b-partnercenter</customer.usage.attribution.id>
         <singleserver.start>0dd3f110-4c7f-5292-a624-954cc19f7c49</singleserver.start>
         <singleserver.end>b82321d6-35d9-5b24-b158-1d32a234bd71</singleserver.end>
+        <singleserver.trial.start>e2691195-adb0-5815-a9c6-5913520bb1e3</singleserver.trial.start>
+        <singleserver.trial.end>247da6d1-3922-55cb-8c0c-22387505fe54</singleserver.trial.end>
         <!-- This is the "Partner ID" in Partner Center" -->
         <image.publisher>ibm-usa-ny-armonk-hq-6275750-ibmcloud-aiops</image.publisher>
         <!-- This is the twas "Offer ID" of the "Azure Virtual Machine" offer type -->

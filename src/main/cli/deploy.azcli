@@ -126,6 +126,8 @@ resourceGroupLocation=$( az group show --name $resourceGroupName | jq -r '.locat
 
 #parameters JSON
 parametersJson=$( cat $parametersFilePath | jq '.parameters' )
+useTrial=$( echo $parametersJson | jq '.useTrial.value' | sed 's/"//g' )
+parametersJson=$( echo $parametersJson | jq --argjson useTrial "$useTrial" '.useTrial.value = $useTrial' )
 parametersJson=$( echo "$parametersJson" | jq -c '.' )
 
 #Start deployment

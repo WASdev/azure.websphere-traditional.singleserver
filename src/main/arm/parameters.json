@@ -5,6 +5,9 @@
         "_artifactsLocation": {
             "value": "${artifactsLocationBase}/src/main/"
         },
+        "useTrial": {
+            "value": "${useTrial}"
+        },
         "ibmUserId": {
             "value": "${ibmUserId}"
         },
