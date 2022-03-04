@@ -5,7 +5,7 @@
 * [Liberty on ARO](https://github.com/WASdev/azure.liberty.aro)
 * [Liberty on AKS](https://github.com/WASdev/azure.liberty.aks)
 
-# Deploy RHEL 8.4 VMs on Azure with IBM WebSphere Application Server traditional V9.0.5 single server
+# Deploy RHEL 8.4 VM on Azure with IBM WebSphere Application Server traditional V9.0.5 single server
 
 ## Prerequisites
 
