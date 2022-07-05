@@ -15,11 +15,11 @@
 */
 
 @description('The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
-param artifactsLocation string = deployment().properties.templateLink.uri
+param _artifactsLocation string = deployment().properties.templateLink.uri
 
 @description('The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured.')
 @secure()
-param artifactsLocationSasToken string = ''
+param _artifactsLocationSasToken string = ''
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -63,7 +63,7 @@ param wasPassword string
 param guidValue string = newGuid()
 
 var const_addressPrefix = '10.0.0.0/16'
-var const_arguments = ' ${wasUsername} ${wasPassword}'
+var const_arguments = format(' {0} {1}', wasUsername, wasPassword)
 var const_dnsLabelPrefix = format('{0}{1}', dnsLabelPrefix, take(replace(guidValue, '-', ''), 6))
 var const_linuxConfiguration = {
   disablePasswordAuthentication: true
@@ -76,7 +76,7 @@ var const_linuxConfiguration = {
     ]
   }
 }
-var const_scriptLocation = uri(artifactsLocation, 'scripts/')
+var const_scriptLocation = uri(_artifactsLocation, 'scripts/')
 var const_subnetAddressPrefix = '10.0.1.0/24'
 var const_subnetName = 'subnet01'
 var name_networkInterface = '${const_dnsLabelPrefix}-if'
@@ -252,7 +252,7 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
     typeHandlerVersion: '2.0'
     settings: {
       fileUris: [
-        uri(const_scriptLocation, 'install.sh${artifactsLocationSasToken}')
+        uri(const_scriptLocation, 'install.sh${_artifactsLocationSasToken}')
       ]
     }
     protectedSettings: {
