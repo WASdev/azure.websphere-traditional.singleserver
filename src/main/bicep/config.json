@@ -1,0 +1,15 @@
+{
+    "customerUsageAttributionId": "pid-5d69db5c-7773-47d1-9455-890d05fb3c2b-partnercenter",
+    "singleserverStart": "0dd3f110-4c7f-5292-a624-954cc19f7c49",
+    "singleserverEnd": "b82321d6-35d9-5b24-b158-1d32a234bd71",
+    "singleserverTrialStart": "e2691195-adb0-5815-a9c6-5913520bb1e3",
+    "singleserverTrialEnd": "247da6d1-3922-55cb-8c0c-22387505fe54",
+    "imagePublisherDescription": "This is the 'Partner ID' in Partner Center",
+    "imagePublisher": "ibm-usa-ny-armonk-hq-6275750-ibmcloud-aiops",
+    "twasImageOfferDescription": "This is the twas 'Offer ID' of the 'Azure Virtual Machine' offer type",
+    "twasImageOffer": "2022-01-06-twas-base-single-server",
+    "twasImageSkuDescription": "This is the twas 'Plan ID' of the plan within the 'Azure Virtual Machine' offer",
+    "twasImageSku": "2022-01-06-twas-single-server-base-image",
+    "twasImageVersionDescription": "This is the twas 'Disk version' of the VM image of the plan within the 'Azure Virtual Machine' offer",
+    "twasImageVersion": "9.0.20220621"
+  }

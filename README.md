@@ -15,6 +15,7 @@
 1. Install [PowerShell Core](https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7.1).
 1. Install [Maven](https://maven.apache.org/download.cgi).
 1. Install [`jq`](https://stedolan.github.io/jq/download/).
+1. Install [Bicep](https://github.com/Azure/bicep/releases) version 0.7.4 or later.
 
 ## Steps of deployment
 
