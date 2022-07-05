@@ -70,7 +70,7 @@ var const_linuxConfiguration = {
   ssh: {
     publicKeys: [
       {
-        path: '/home/${adminUsername}/.ssh/authorized_keys'
+        path: format('/home/{0}/.ssh/authorized_keys', adminUsername)
         keyData: adminPasswordOrKey
       }
     ]
@@ -216,7 +216,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: ((authenticationType == 'password') ? json('null') : const_linuxConfiguration)
-      customData: base64((useTrial ? ' ' : '${ibmUserId} ${ibmUserPwd}'))
+      customData: base64(useTrial ? ' ' : format('{0} {1}', ibmUserId, ibmUserPwd))
     }
     networkProfile: {
       networkInterfaces: [
