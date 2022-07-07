@@ -99,7 +99,7 @@ module singleServerStartPid './modules/_pids/_empty.bicep' = {
   params: {}
 }
 
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   name: name_networkSecurityGroup
   location: location
   properties: {
@@ -126,7 +126,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-01-0
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-08-01' = {
   name: name_virtualNetwork
   location: location
   properties: {
@@ -143,7 +143,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
   ]
 }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = {
   parent: virtualNetwork
   name: const_subnetName
   properties: {
@@ -154,7 +154,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
   }
 }
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
   name: name_publicIPAddress
   location: location
   properties: {
@@ -165,7 +165,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   }
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
   name: name_networkInterface
   location: location
   properties: {
