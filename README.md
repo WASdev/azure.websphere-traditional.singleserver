@@ -15,6 +15,7 @@
 1. Install [PowerShell Core](https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7.1).
 1. Install [Maven](https://maven.apache.org/download.cgi).
 1. Install [`jq`](https://stedolan.github.io/jq/download/).
+1. Install [Bicep](https://github.com/Azure/bicep/releases) version 0.7.4 or later.
 
 ## Steps of deployment
 
@@ -25,7 +26,7 @@
 1. Build the project by replacing all placeholder `${<place_holder>}` with valid values
 
    ```bash
-   mvn -Dgit.repo=<repo_user> -Dgit.tag=<repo_tag> -DibmUserId=<ibmUserId> -DibmUserPwd=<ibmUserPwd> -DvmSize=<vmSize> -DdnsLabelPrefix=<dnsLabelPrefix> -DadminUsername=<adminUsername> -DadminPasswordOrKey=<adminPassword|adminSSHPublicKey> -DauthenticationType=<password|sshPublicKey> -DwasUsername=<wasUsername> -DwasPassword=<wasPassword> -Dtest.args="-Test All" -Ptemplate-validation-tests clean install
+   mvn -Dgit.repo=<repo_user> -Dgit.tag=<repo_tag> -DibmUserId=<ibmUserId> -DibmUserPwd=<ibmUserPwd> -DvmSize=<vmSize> -DdnsLabelPrefix=<dnsLabelPrefix> -DadminUsername=<adminUsername> -DadminPasswordOrKey=<adminPassword|adminSSHPublicKey> -DauthenticationType=<password|sshPublicKey> -DwasUsername=<wasUsername> -DwasPassword=<wasPassword> -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
    ```
 
 1. Change to `./target/cli` directory
