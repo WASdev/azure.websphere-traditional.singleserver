@@ -227,6 +227,53 @@
                         }
                     }
                 ]
+            },
+            {
+                "name": "NetworkingConfig",
+                "label": "Networking",
+                "subLabel": {
+                    "preValidation": "Provide required information for networking",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Networking",
+                "elements": [
+                    {
+                        "name": "vnetForSingleServer",
+                        "type": "Microsoft.Network.VirtualNetworkCombo",
+                        "label": {
+                            "virtualNetwork": "Virtual network",
+                            "subnets": "Subnets"
+                        },
+                        "toolTip": {
+                            "virtualNetwork": "Name of the virtual network",
+                            "subnets": "Subnets for the virtual network"
+                        },
+                        "defaultValue": {
+                            "name": "[concat('twassingle-vnet',take(guid(), 8))]",
+                            "addressPrefixSize": "/24"
+                        },
+                        "constraints": {
+                            "minAddressPrefixSize": "/24"
+                        },
+                        "options": {
+                            "hideExisting": false
+                        },
+                        "subnets": {
+                            "subnet1": {
+                                "label": "Subnet",
+                                "defaultValue": {
+                                    "name": "twas-single-subnet",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 38,
+                                    "requireContiguousAddresses": false
+                                }
+                            }
+                        }
+                    }
+                ]
             }
         ],
         "outputs": {
@@ -240,7 +287,10 @@
             "adminPasswordOrKey": "[if(equals(steps('SingleServerConfig').adminPasswordOrKey.authenticationType, 'password'), steps('SingleServerConfig').adminPasswordOrKey.password, steps('SingleServerConfig').adminPasswordOrKey.sshPublicKey)]",
             "authenticationType": "[steps('SingleServerConfig').adminPasswordOrKey.authenticationType]",
             "wasUsername": "[steps('SingleServerConfig').wasUsername]",
-            "wasPassword": "[steps('SingleServerConfig').wasPassword]"
+            "wasPassword": "[steps('SingleServerConfig').wasPassword]",
+            "vnetForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer]",
+            "newOrExistingVnetForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.newOrExisting]",
+            "vnetRGNameForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.resourceGroup]"
         }
     }
 }

@@ -60,9 +60,31 @@ param wasUsername string
 @description('Password for WebSphere admin.')
 @secure()
 param wasPassword string
+
+@description('VNET for Single Server.')
+param vnetForSingleServer object = {
+  name: 'twassingle-vnet'
+  resourceGroup: resourceGroup().name
+  addressPrefixes: [
+    '10.0.0.0/24'
+  ]
+  addressPrefix: '10.0.0.0/24'
+  newOrExisting: 'new'
+  subnets: {
+    subnet1: {
+      name: 'twassingle-subnet'
+      addressPrefix: '10.0.0.0/24'
+      startAddress: '10.0.0.4'
+    }
+  }
+}
+@description('To mitigate ARM-TTK error: Control Named vnetForSingleServer must output the newOrExisting property when hideExisting is false')
+param newOrExistingVnetForSingleServer string = 'new'
+@description('To mitigate ARM-TTK error: Control Named vnetForSingleServer must output the resourceGroup property when hideExisting is false')
+param vnetRGNameForSingleServer string = resourceGroup().name
+
 param guidValue string = newGuid()
 
-var const_addressPrefix = '10.0.0.0/16'
 var const_arguments = format(' {0} {1}', wasUsername, wasPassword)
 var const_dnsLabelPrefix = format('{0}{1}', dnsLabelPrefix, take(replace(guidValue, '-', ''), 6))
 var const_linuxConfiguration = {
@@ -76,14 +98,13 @@ var const_linuxConfiguration = {
     ]
   }
 }
+var const_newVNet = (newOrExistingVnetForSingleServer == 'new') ? true : false
 var const_scriptLocation = uri(_artifactsLocation, 'scripts/')
-var const_subnetAddressPrefix = '10.0.1.0/24'
-var const_subnetName = 'subnet01'
 var name_networkInterface = '${const_dnsLabelPrefix}-if'
+var name_networkInterfaceNoPubIp = '${const_dnsLabelPrefix}-if-no-pub-ip'
 var name_networkSecurityGroup = '${const_dnsLabelPrefix}-nsg'
 var name_publicIPAddress = '${const_dnsLabelPrefix}-ip'
 var name_virtualMachine = '${const_dnsLabelPrefix}-vm'
-var name_virtualNetwork = '${const_dnsLabelPrefix}-vnet'
 
 // Work around arm-ttk test "Variables Must Be Referenced"
 var configBase64 = loadFileAsBase64('config.json')
@@ -99,7 +120,7 @@ module singleServerStartPid './modules/_pids/_empty.bicep' = {
   params: {}
 }
 
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-08-01' = if (const_newVNet) {
   name: name_networkSecurityGroup
   location: location
   properties: {
@@ -126,35 +147,38 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-08-0
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-08-01' = {
-  name: name_virtualNetwork
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-08-01' = if (const_newVNet) {
+  name: vnetForSingleServer.name
   location: location
   properties: {
     addressSpace: {
-      addressPrefixes: [
-        const_addressPrefix
-      ]
+      addressPrefixes: vnetForSingleServer.addressPrefixes
     }
-    enableDdosProtection: false
-    enableVmProtection: false
-  }
-  dependsOn: [
-    networkSecurityGroup
-  ]
-}
-
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = {
-  parent: virtualNetwork
-  name: const_subnetName
-  properties: {
-    addressPrefix: const_subnetAddressPrefix
-    networkSecurityGroup: {
-      id: networkSecurityGroup.id
-    }
+    subnets: [
+      {
+        name: vnetForSingleServer.subnets.subnet1.name
+        properties: {
+          addressPrefix: vnetForSingleServer.subnets.subnet1.addressPrefix
+          networkSecurityGroup: {
+            id: networkSecurityGroup.id
+          }
+        }
+      }
+    ]
   }
 }
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
+resource existingVNet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = if (!const_newVNet) {
+  name: vnetForSingleServer.name
+  scope: resourceGroup(vnetRGNameForSingleServer)
+}
+
+resource existingSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = if (!const_newVNet) {
+  parent: existingVNet
+  name: vnetForSingleServer.subnets.subnet1.name
+}
+
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = if (const_newVNet) {
   name: name_publicIPAddress
   location: location
   properties: {
@@ -165,7 +189,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
   }
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = if (const_newVNet) {
   name: name_networkInterface
   location: location
   properties: {
@@ -178,7 +202,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
             id: publicIPAddress.id
           }
           subnet: {
-            id: subnet.id
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetForSingleServer.name, vnetForSingleServer.subnets.subnet1.name)
           }
         }
       }
@@ -186,6 +210,24 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
     dnsSettings: {
       internalDnsNameLabel: name_virtualMachine
     }
+  }
+}
+
+resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@2021-08-01' = if (!const_newVNet) {
+  name: name_networkInterfaceNoPubIp
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: existingSubnet.id
+          }
+        }
+      }
+    ]
   }
 }
 
@@ -221,7 +263,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: networkInterface.id
+          id: const_newVNet ? networkInterface.id : networkInterfaceNoPubIp.id
         }
       ]
     }
@@ -269,6 +311,6 @@ module singleServerEndPid './modules/_pids/_empty.bicep' = {
   ]
 }
 
-output adminSecuredConsole string = uri(format('https://{0}:9043/', publicIPAddress.properties.dnsSettings.fqdn), 'ibm/console')
-output snoopServletUrl string = uri(format('https://{0}:9443/', publicIPAddress.properties.dnsSettings.fqdn), 'snoop')
-output hitCountServletUrl string = uri(format('https://{0}:9443/', publicIPAddress.properties.dnsSettings.fqdn), 'hitcount')
+output adminSecuredConsole string = uri(format('https://{0}:9043/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'ibm/console')
+output snoopServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'snoop')
+output hitCountServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'hitcount')
