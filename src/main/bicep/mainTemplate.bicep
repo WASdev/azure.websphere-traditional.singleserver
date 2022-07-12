@@ -211,6 +211,9 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = if 
       internalDnsNameLabel: name_virtualMachine
     }
   }
+  dependsOn: [
+    virtualNetwork
+  ]
 }
 
 resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@2021-08-01' = if (!const_newVNet) {
