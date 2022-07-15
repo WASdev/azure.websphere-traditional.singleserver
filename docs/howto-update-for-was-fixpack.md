@@ -51,7 +51,7 @@ Please follow sections below in order to update the solution for next tWAS base 
    Note: Currently Graham Charters has privilege to update the image in marketplace, contact him for more information.
 
 1. Do we need to update the solution every time we do the image update?
-   * Yes. That's because image version of [`twas-base`](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/src/main/bicep/config.json#L14) is explicitely referenced in the tWAS base single server solution. Make sure correct image version is specified in the `config.json` of the solution code.
+   * Yes. That's because image version of [`twas-base`](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/src/main/bicep/config.json#L13) is explicitely referenced in the tWAS base single server solution. Make sure correct image version is specified in the `config.json` of the solution code.
 
 ## Updating and publishing the solution code
 
@@ -59,7 +59,7 @@ Note: **Wait for images to be published before proceeding with this step.** The 
 
 1. How to update the version of the solution?
    * Increase the [version number](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/pom.xml#L22) which is specified in the `pom.xml`
-   * Also update the [`twasImageVersion`](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/src/main/bicep/config.json#L14) in the `config.json` (obtained from publish step)
+   * Also update the [`twasImageVersion`](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/src/main/bicep/config.json#L13) in the `config.json` (obtained from publish step)
    * Get the PR merged
 
 1. How to run CI/CD?
