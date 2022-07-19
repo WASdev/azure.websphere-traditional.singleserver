@@ -66,15 +66,15 @@ param vnetForSingleServer object = {
   name: 'twassingle-vnet'
   resourceGroup: resourceGroup().name
   addressPrefixes: [
-    '10.0.0.0/24'
+    '10.0.0.32/28'
   ]
-  addressPrefix: '10.0.0.0/24'
+  addressPrefix: '10.0.0.32/28'
   newOrExisting: 'new'
   subnets: {
     subnet1: {
       name: 'twassingle-subnet'
-      addressPrefix: '10.0.0.0/24'
-      startAddress: '10.0.0.4'
+      addressPrefix: '10.0.0.32/29'
+      startAddress: '10.0.0.36'
     }
   }
 }
