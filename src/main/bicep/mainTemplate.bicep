@@ -34,6 +34,9 @@ param ibmUserId string = ''
 @secure()
 param ibmUserPwd string = ''
 
+@description('Boolean value indicating, if user agrees to IBM contacting my company or organization.')
+param shareCompanyName bool = false
+
 @description('The size of virtual machine to provision.')
 param vmSize string
 
@@ -112,6 +115,11 @@ var config = base64ToJson(configBase64)
 
 module partnerCenterPid './modules/_pids/_empty.bicep' = {
   name: 'pid-5d69db5c-7773-47d1-9455-890d05fb3c2b-partnercenter'
+  params: {}
+}
+
+module shareCompanyNamePid './modules/_pids/_empty.bicep' = if (useTrial && shareCompanyName) {
+  name: config.shareCompanyNamePid
   params: {}
 }
 
