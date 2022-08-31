@@ -6,12 +6,11 @@ on:
   # REPO_NAME=WASdev/azure.websphere-traditional.singleserver
   # curl --verbose -XPOST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/package.yaml/dispatches --data '{"ref": "main"}'
   repository_dispatch:
-    types: [integration-test, package]
+    types: [integration-test]
   # sample request
   # PERSONAL_ACCESS_TOKEN=<GITHUB_PERSONAL_ACCESS_TOKEN>
   # REPO_NAME=WASdev/azure.websphere-traditional.singleserver
   # curl --verbose -X POST https://api.github.com/repos/${REPO_NAME}/dispatches -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${PERSONAL_ACCESS_TOKEN}" --data '{"event_type": "integration-test"}'
-  # curl --verbose -X POST https://api.github.com/repos/${REPO_NAME}/dispatches -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${PERSONAL_ACCESS_TOKEN}" --data '{"event_type": "package"}'
 env:
   # Latest version is at https://github.com/Azure/azure-cli/releases
   azCliVersion: 2.31.0
@@ -106,6 +105,14 @@ jobs:
             echo "Failed to access ${snoopServletUrl}."
             exit 1
           fi
+      - name: Delete all Azure resources
+        id: delete-resources-in-group
+        if: always()
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.azCliVersion }}
+          inlineScript: |
+            az group delete -n ${{ env.testResourceGroup }} --yes
       - name: Generate artifact file name and path
         id: artifact_file
         run: |
