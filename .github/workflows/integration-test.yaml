@@ -1,4 +1,4 @@
-name: Package ARM
+name: integration-test
 on:
   workflow_dispatch:
   # Allows you to run this workflow using GitHub APIs
