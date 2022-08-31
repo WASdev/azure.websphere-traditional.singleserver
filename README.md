@@ -34,7 +34,7 @@
 1. Using `deploy.azcli` to deploy
 
    ```bash
-   ./deploy.azcli -n <deploymentName> -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation>
+   ./deploy.azcli -n <deploymentName> -g <resourceGroupName> -l <resourceGroupLocation>
    ```
 
 ## After deployment

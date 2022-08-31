@@ -30,7 +30,7 @@ env:
   testDeploymentName: twasSingleTestDeployment${{ github.run_id }}${{ github.run_number }}
   location: eastus
 jobs:
-  package:
+  integration-test:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 1.8
@@ -77,9 +77,10 @@ jobs:
       - name: Deploy a twas-single server on Azure VM
         run: |
           cd ${{ env.repoName }}/target/cli
+          chmod a+x deploy.azcli
           echo "Starting deployment..."
           (
-            ./deploy.azcli -n ${{ env.testDeploymentName }} -i $(echo ${{ env.azureCredentials }} | jq '.subscriptionId') -g ${{ env.testResourceGroup }} -l ${{ env.location }}
+            ./deploy.azcli -n ${{ env.testDeploymentName }} -g ${{ env.testResourceGroup }} -l ${{ env.location }}
           )
           if [[ $? -eq 0 ]]; then
             echo "Template has been successfully deployed"
