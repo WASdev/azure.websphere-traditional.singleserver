@@ -85,6 +85,27 @@ jobs:
           if [[ $? -eq 0 ]]; then
             echo "Template has been successfully deployed"
           fi
+      - name: Verify the deployment
+        run: |
+          outputs=$(az deployment group show -n ${{ env.testDeploymentName }} -g ${{ env.testResourceGroup }} --query 'properties.outputs')
+          adminSecuredConsole=$(echo $outputs | jq -r '.adminSecuredConsole.value')
+          curl $adminSecuredConsole -k
+          if [[ $? -ne 0 ]]; then
+            echo "Failed to access ${adminSecuredConsole}."
+            exit 1
+          fi
+          hitCountServletUrl=$(echo $outputs | jq -r '.hitCountServletUrl.value')
+          curl $hitCountServletUrl -k
+          if [[ $? -ne 0 ]]; then
+            echo "Failed to access ${hitCountServletUrl}."
+            exit 1
+          fi
+          snoopServletUrl=$(echo $outputs | jq -r '.snoopServletUrl.value')
+          curl $snoopServletUrl -k
+          if [[ $? -ne 0 ]]; then
+            echo "Failed to access ${snoopServletUrl}."
+            exit 1
+          fi
       - name: Generate artifact file name and path
         id: artifact_file
         run: |
