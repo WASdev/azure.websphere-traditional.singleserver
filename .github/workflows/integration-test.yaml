@@ -127,3 +127,27 @@ jobs:
         with:
           name: ${{steps.artifact_file.outputs.artifactName}}
           path: ${{steps.artifact_file.outputs.artifactPath}}
+  notification:
+    needs: integration-test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        if: always()
+        run: |
+            workflowJobs=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.userName }}/${{ env.repoName }}/actions/runs/${{ github.run_id }}/jobs)
+            successIntegrationTestJob=$(echo $workflowJobs | jq '.jobs | map(select(.name=="integration-test" and .conclusion=="success")) | length')
+            if (($successIntegrationTestJob == 0));then
+                echo "Job integration-test failed, send notification to Teams"
+                curl ${{ env.msTeamsWebhook }} \
+                -H 'Content-Type: application/json' \
+                --data-binary @- << EOF
+                {
+                "@context":"http://schema.org/extensions",
+                "@type":"MessageCard",
+                "text":"Workflow integration-test of repo ${{ env.repoName }} failed, please take a look at: https://github.com/${{ env.userName }}/${{ env.repoName }}/actions/runs/${{ github.run_id }}"
+                }
+            EOF
+            else
+                echo "Job integration-test succeeded."
+            fi
