@@ -105,3 +105,13 @@ Previous versions of the solution are archived. You can find/download them from 
 ## Create a release and a branch with the GA code (for image and singleserver repo)
 
 Probably creating a release/tag for each GA code is good enough.
+
+
+## Troubleshooting
+### twas-base CICD's Deploy VM stage fails with "Can not perform requested operation on nested resource"
+```
+ERROR: ***"status":"Failed","error":***"code":"DeploymentFailed","message":"At least one resource deployment operation failed. Please list deployment operations for details. Please see https://aka.ms/DeployOperations for usage details.","details":[***"code":"NotFound","message":"***\r\n  \"error\": ***\r\n    \"code\": \"ParentResourceNotFound\",\r\n    \"message\": \"Can not perform requested operation on nested resource. Parent resource 'evaluation297509892811' not found.\"\r\n  ***\r\n***"***]***
+Error: Process completed with exit code 1.
+```
+
+This failure is caused by the issue that vm extension can't find the VM where it's executed. I guess it's an intermittent Azure issue as I can't reproduce the similar issue.
