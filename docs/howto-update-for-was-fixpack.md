@@ -35,9 +35,9 @@ Please follow sections below in order to update the solution for next tWAS base 
       * **IMPORTANT** Click `Pricing and availability` to verify the plan is hidden from the marketplace
          * Ensure the `Hide plan` checkbox is checked
       * Click `Technical configuration` 
-      * Click `+ Add VM image` > Specify a new value for `Disk version`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
-      * Select `SAS URI` > Copy and paste value of `osDiskSasUrl` for `twas-base` to the textbox `SAS URI` 
-      * Click `+ Add data disk (max 16)` > Select `Data disk 0` > Copy and paste value of `dataDiskSasUrl` for `twas-base` to the textbox `Data disk VHD link`
+      * Click `+` under "VM Images" to add VM image > Specify a new value for `Version number`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
+      * Under `SAS URI` > `Add OS Disk`. Copy and paste value of `osDiskSasUrl` for `twas-base` to the textbox `OS VHD Link` 
+      * Click `+ Add data disk` > Select `Data disk 0` > Copy and paste value of `dataDiskSasUrl` for `twas-base` to the textbox `Data disk VHD link`
       * Scroll to the bottom of the page and click `Save VM image`
       * Click `Save draft`
       * Click `Review and publish`
