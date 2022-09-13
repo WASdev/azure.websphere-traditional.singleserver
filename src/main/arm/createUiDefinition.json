@@ -317,7 +317,7 @@
                         "type": "Microsoft.Common.TextBlock",
                         "visible": true,
                         "options": {
-                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebLogic Server to connect to the desired pre-existing database.  The database must be network accessible to the VNET and subnets that're configured in the <b>Networking</b>."
+                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebLogic Server to connect to the desired pre-existing database. The database must be network accessible to the VNET and subnets configured in the Networking."
                         }
                     },
                     {
