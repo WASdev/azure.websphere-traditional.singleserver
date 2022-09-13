@@ -301,6 +301,128 @@
                         }
                     }
                 ]
+            },
+            {
+                "name": "section_database",
+                "type": "Microsoft.Common.Section",
+                "label": "Database",
+                "subLabel": {
+                    "preValidation": "Configure integrations to database",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Database",
+                "elements": [
+                    {
+                        "name": "aboutDatabase",
+                        "type": "Microsoft.Common.TextBlock",
+                        "visible": true,
+                        "options": {
+                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebLogic Server to connect to the desired pre-existing database.  The database must be network accessible to the VNET and subnets that're configured in the <b>Networking</b>."
+                        }
+                    },
+                    {
+                        "name": "enableDB",
+                        "type": "Microsoft.Common.OptionsGroup",
+                        "label": "Connect to database?",
+                        "defaultValue": "No",
+                        "toolTip": "Select 'Yes' and provide required info to configure the connection to a database.",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "Yes",
+                                    "value": "true"
+                                },
+                                {
+                                    "label": "No",
+                                    "value": "false"
+                                }
+                            ],
+                            "required": true
+                        }
+                    },
+                    {
+                        "name": "databaseConnectionInfo",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Connection settings",
+                        "elements": [
+                            {
+                                "name": "databaseType",
+                                "type": "Microsoft.Common.DropDown",
+                                "label": "Choose database type",
+                                "toolTip": "Choose database type",
+                                "defaultValue": "IBM DB2",
+                                "constraints": {
+                                    "allowedValues": [
+                                        {
+                                            "label": "IBM DB2",
+                                            "value": "db2"
+                                        }
+                                    ],
+                                    "required": true
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "jdbcDataSourceName",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "JNDI Name",
+                                "toolTip": "The JNDI name for the database JDBC connection",
+                                "defaultValue": "",
+                                "constraints": {
+                                    "required": true,
+                                    "regex": "^[a-zA-Z0-9./_-]{1,30}$",
+                                    "validationMessage": "The value must be 1-30 characters long and must only contain letters, numbers, hyphens (-), underscores (_), periods (.) and slashes (/)."
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "dsConnectionURL",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "DataSource Connection String",
+                                "toolTip": "The JDBC connection string for the database",
+                                "defaultValue": "",
+                                "constraints": {
+                                    "required": true,
+                                    "regex": "[concat('^jdbc:', coalesce(steps('section_database').databaseConnectionInfo.databaseType, ''), ':\/\/([^\/]+):([0-9]+)\/([\\w-]+)')]",
+                                    "validationMessage": "A valid JDBC URL for the chosen database type must be provided"
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "dbUser",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Database username",
+                                "toolTip": "Use only letters and numbers",
+                                "defaultValue": "",
+                                "constraints": {
+                                    "required": true,
+                                    "regex": "^(?=.{1,128}$)[a-zA-Z](?!.*--)(?!.*@@)(?!.*-@)(?!.*@-)[a-zA-Z0-9-@]*[a-zA-Z0-9]$",
+                                    "validationMessage": "The value must be 1-128 characters long and must only contain letters, numbers, hyphen(-) and the at sign, no hyphen allowed at the beginning and the end of database username."
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "dbPassword",
+                                "type": "Microsoft.Common.PasswordBox",
+                                "label": {
+                                    "password": "Database Password",
+                                    "confirmPassword": "Confirm password"
+                                },
+                                "toolTip": "Database Password",
+                                "constraints": {
+                                    "required": true,
+                                    "regex": "^((?=.*[0-9])(?=.*[a-zA-Z!@#$%^&*])).{6,128}$",
+                                    "validationMessage": "The password must be between 6 and 128 characters long and have at least one number."
+                                },
+                                "options": {
+                                    "hideConfirmation": false
+                                },
+                                "visible": true
+                            }
+                        ],
+                        "visible": "[bool(steps('section_database').enableDB)]"
+                    }
+                ]
             }
         ],
         "outputs": {
@@ -318,7 +440,13 @@
             "wasPassword": "[steps('SingleServerConfig').wasPassword]",
             "vnetForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer]",
             "newOrExistingVnetForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.newOrExisting]",
-            "vnetRGNameForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.resourceGroup]"
+            "vnetRGNameForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.resourceGroup]",
+            "enableDB": "[bool(steps('section_database').enableDB)]",
+            "databaseType": "[steps('section_database').databaseConnectionInfo.databaseType]",
+            "jdbcDataSourceName": "[steps('section_database').databaseConnectionInfo.jdbcDataSourceName]",
+            "dsConnectionURL": "[steps('section_database').databaseConnectionInfo.dsConnectionURL]",
+            "dbUser": "[steps('section_database').databaseConnectionInfo.dbUser]",
+            "dbPassword": "[steps('section_database').databaseConnectionInfo.dbPassword]"  
         }
     }
 }
