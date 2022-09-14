@@ -11,5 +11,7 @@
     "twasImageSku": "2022-01-06-twas-single-server-base-image",
     "twasImageVersionDescription": "This is the twas 'Disk version' of the VM image of the plan within the 'Azure Virtual Machine' offer",
     "twasImageVersion": "9.0.20220902",
-    "shareCompanyNamePid": "30506c13-213a-5014-a6dd-db73605fc548"
+    "shareCompanyNamePid": "30506c13-213a-5014-a6dd-db73605fc548",
+    "dbConnectionStart": "25c57f90-1ce1-57fd-8576-aaa89ea52d99",
+    "dbConnectionEnd": "2fcfbffb-d5e2-5645-9347-409ea880c726"
 }
