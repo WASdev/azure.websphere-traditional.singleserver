@@ -15,14 +15,15 @@
 #  limitations under the License.
 
 # Parameters
-wasRootPath=$1                                  # Root path of WebSphere
-wasProfileName=$2                               # WAS profile name
-wasServerName=$3                                # WAS server name
-databaseType=$4                                 # Supported database types: db2
-jdbcDataSourceName=$(echo "${5}" | base64 -d)   # JNDI Name for JDBC Datasource
-dsConnectionURL=$(echo "${6}" | base64 -d)      # JDBC Connection String
-dbUser=$(echo "${7}" | base64 -d)               # Database username
-dbPassword=$(echo "${8}" | base64 -d)           # Database user password
+wasRootPath=$1                                      # Root path of WebSphere
+wasProfileName=$2                                   # WAS profile name
+wasServerName=$3                                    # WAS server name
+databaseType=$4                                     # Supported database types: db2
+jdbcDataSourceName=$5                               # JDBC Datasource name
+jdbcDataSourceJNDIName=$(echo "${6}" | base64 -d)   # JDBC Datasource JNDI name
+dsConnectionURL=$(echo "${7}" | base64 -d)          # JDBC Datasource connection String
+dbUser=$(echo "${8}" | base64 -d)                   # Database username
+dbPassword=$(echo "${9}" | base64 -d)               # Database user password
 
 # Copy data source creation template per database type
 createDsTemplate=create-ds-${databaseType}.py.template
@@ -46,16 +47,20 @@ if [ $databaseType == "db2" ]; then
     find "$wasRootPath" -name "db2jcc*.jar" | xargs -I{} cp {} "$jdbcDriverPath"
     jdbcDriverPath=$(realpath "$jdbcDriverPath")
 
-    # Get jython file template & replace placeholder strings with user-input parameters
+    # Replace placeholder strings with user-input parameters
     sed -i "s/\${WAS_SERVER_NAME}/${wasServerName}/g" $createDsScript
     sed -i "s#\${DB2UNIVERSAL_JDBC_DRIVER_PATH}#${jdbcDriverPath}#g" $createDsScript
     sed -i "s/\${DB2_DATABASE_USER_NAME}/${dbUser}/g" $createDsScript
     sed -i "s/\${DB2_DATABASE_USER_PASSWORD}/${dbPassword}/g" $createDsScript
     sed -i "s/\${DB2_DATABASE_NAME}/${db2DBName}/g" $createDsScript
-    sed -i "s#\${DB2_DATASOURCE_JNDI_NAME}#${jdbcDataSourceName}#g" $createDsScript
+    sed -i "s/\${DB2_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
+    sed -i "s#\${DB2_DATASOURCE_JNDI_NAME}#${jdbcDataSourceJNDIName}#g" $createDsScript
     sed -i "s/\${DB2_SERVER_NAME}/${db2ServerName}/g" $createDsScript
     sed -i "s/\${PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
 fi
 
 # Create JDBC provider and data source using jython file
 "$wasRootPath"/profiles/${wasProfileName}/bin/wsadmin.sh -lang jython -f $createDsScript
+
+# Remove datasource creation script file
+rm -rf $createDsScript

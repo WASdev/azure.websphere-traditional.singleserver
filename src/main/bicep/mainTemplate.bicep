@@ -94,7 +94,7 @@ param enableDB bool = false
 @description('One of the supported database types')
 param databaseType string = 'db2'
 @description('JNDI Name for JDBC Datasource')
-param jdbcDataSourceName string = 'jdbc/contoso'
+param jdbcDataSourceJNDIName string = 'jdbc/contoso'
 @description('JDBC Connection String')
 param dsConnectionURL string = 'jdbc:db2://contoso.db2.database:50000/sample'
 @description('User id of Database')
@@ -105,7 +105,7 @@ param dbPassword string = newGuid()
 
 param guidValue string = newGuid()
 
-var const_arguments = format(' {0} {1} {2} {3} {4} {5} {6} {7}', wasUsername, wasPassword, enableDB, databaseType, base64(jdbcDataSourceName), base64(dsConnectionURL), base64(dbUser), base64(dbPassword))
+var const_arguments = format(' {0} {1} {2} {3} {4} {5} {6} {7}', wasUsername, wasPassword, enableDB, databaseType, base64(jdbcDataSourceJNDIName), base64(dsConnectionURL), base64(dbUser), base64(dbPassword))
 var const_dnsLabelPrefix = format('{0}{1}', dnsLabelPrefix, take(replace(guidValue, '-', ''), 6))
 var const_linuxConfiguration = {
   disablePasswordAuthentication: true

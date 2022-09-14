@@ -363,7 +363,7 @@
                                 "visible": true
                             },
                             {
-                                "name": "jdbcDataSourceName",
+                                "name": "jdbcDataSourceJNDIName",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "JNDI Name",
                                 "toolTip": "The JNDI name for the database JDBC connection",
@@ -443,7 +443,7 @@
             "vnetRGNameForSingleServer": "[steps('NetworkingConfig').vnetForSingleServer.resourceGroup]",
             "enableDB": "[bool(steps('section_database').enableDB)]",
             "databaseType": "[steps('section_database').databaseConnectionInfo.databaseType]",
-            "jdbcDataSourceName": "[steps('section_database').databaseConnectionInfo.jdbcDataSourceName]",
+            "jdbcDataSourceJNDIName": "[steps('section_database').databaseConnectionInfo.jdbcDataSourceJNDIName]",
             "dsConnectionURL": "[steps('section_database').databaseConnectionInfo.db2DsConnectionURL]",
             "dbUser": "[steps('section_database').databaseConnectionInfo.dbUser]",
             "dbPassword": "[steps('section_database').databaseConnectionInfo.dbPassword]"  
