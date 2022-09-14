@@ -311,7 +311,7 @@ module singleServerVMCreated './modules/_pids/_empty.bicep' = {
   ]
 }
 
-module dbConnectionStartPid './modules/_pids/_empty.bicep' = {
+module dbConnectionStartPid './modules/_pids/_empty.bicep' = if (enableDB) {
   name: config.dbConnectionStart
   params: {}
   dependsOn: [
@@ -341,7 +341,7 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
   }
 }
 
-module dbConnectionEndPid './modules/_pids/_empty.bicep' = {
+module dbConnectionEndPid './modules/_pids/_empty.bicep' = if (enableDB) {
   name: config.dbConnectionEnd
   params: {}
   dependsOn: [
