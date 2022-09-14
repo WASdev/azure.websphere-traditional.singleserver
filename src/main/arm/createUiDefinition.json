@@ -317,7 +317,7 @@
                         "type": "Microsoft.Common.TextBlock",
                         "visible": true,
                         "options": {
-                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebLogic Server to connect to the desired pre-existing database. The database must be network accessible to the VNET and subnets configured in the Networking."
+                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebSphere Server to connect to the desired pre-existing database. The database must be network accessible to the VNET and subnets configured in the Networking."
                         }
                     },
                     {
@@ -376,17 +376,18 @@
                                 "visible": true
                             },
                             {
-                                "name": "dsConnectionURL",
+                                "name": "db2DsConnectionURL",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "DataSource Connection String",
                                 "toolTip": "The JDBC connection string for the database",
                                 "defaultValue": "",
+                                "placeholder": "jdbc:db2://<host>:<port>/<database>",
                                 "constraints": {
                                     "required": true,
-                                    "regex": "[concat('^jdbc:', coalesce(steps('section_database').databaseConnectionInfo.databaseType, ''), ':\/\/([^\/]+):([0-9]+)\/([\\w-]+)')]",
+                                    "regex": "^jdbc:db2:\/\/([^\/]+):([0-9]+)\/([\\w-]+)",
                                     "validationMessage": "A valid JDBC URL for the chosen database type must be provided"
                                 },
-                                "visible": true
+                                "visible": "[equals(steps('section_database').databaseConnectionInfo.databaseType, 'db2')]"
                             },
                             {
                                 "name": "dbUser",
@@ -444,7 +445,7 @@
             "enableDB": "[bool(steps('section_database').enableDB)]",
             "databaseType": "[steps('section_database').databaseConnectionInfo.databaseType]",
             "jdbcDataSourceName": "[steps('section_database').databaseConnectionInfo.jdbcDataSourceName]",
-            "dsConnectionURL": "[steps('section_database').databaseConnectionInfo.dsConnectionURL]",
+            "dsConnectionURL": "[steps('section_database').databaseConnectionInfo.db2DsConnectionURL]",
             "dbUser": "[steps('section_database').databaseConnectionInfo.dbUser]",
             "dbPassword": "[steps('section_database').databaseConnectionInfo.dbPassword]"  
         }
