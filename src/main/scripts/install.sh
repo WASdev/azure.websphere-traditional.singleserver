@@ -125,14 +125,12 @@ ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
 if [ "$enableDB" == "True" ]; then
     jdbcDataSourceName=dataSource-$databaseType
     ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$databaseType" "$jdbcDataSourceName" "$jdbcDataSourceJNDIName" "$dsConnectionURL" "$dbUser" "$dbPassword"
-fi
 
-# Restart server
-${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/stopServer.sh server1
-${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
+    # Restart server
+    ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/stopServer.sh server1
+    ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
 
-# Test connection for the created data source
-if [ "$enableDB" == "True" ]; then
+    # Test connection for the created data source
     ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/wsadmin.sh -lang jython -c "AdminControl.testConnection(AdminConfig.getid('/DataSource:${jdbcDataSourceName}/'))"
     if [[ $? != 0 ]]; then
         echo "$(date): Test data source connection failed."
