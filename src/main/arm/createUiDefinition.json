@@ -378,10 +378,9 @@
                             {
                                 "name": "db2DsConnectionURL",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "DataSource Connection String",
+                                "label": "DataSource Connection String (jdbc:db2://&lt;host&gt;:&lt;port&gt;/&lt;database&gt;)",
                                 "toolTip": "The JDBC connection string for the database",
                                 "defaultValue": "",
-                                "placeholder": "jdbc:db2://<host>:<port>/<database>",
                                 "constraints": {
                                     "required": true,
                                     "regex": "^jdbc:db2:\/\/([^\/]+):([0-9]+)\/([\\w-]+)",
