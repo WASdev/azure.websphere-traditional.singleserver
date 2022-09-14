@@ -331,6 +331,8 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
     settings: {
       fileUris: [
         uri(const_scriptLocation, 'install.sh${_artifactsLocationSasToken}')
+        uri(const_scriptLocation, 'create-ds.sh${_artifactsLocationSasToken}')
+        uri(const_scriptLocation, 'create-ds-db2.py.template${_artifactsLocationSasToken}')
       ]
     }
     protectedSettings: {
