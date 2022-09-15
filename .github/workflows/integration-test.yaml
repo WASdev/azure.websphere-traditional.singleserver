@@ -184,6 +184,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Output inputs
+        run: echo "${{ toJSON(github.event.inputs) }}"
       - name: Send notification
         if: always()
         run: |
