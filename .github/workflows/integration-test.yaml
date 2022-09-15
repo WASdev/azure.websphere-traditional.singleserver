@@ -92,17 +92,16 @@ jobs:
             --tags SkipASMAzSecPack=true SkipNRMSCorp=true SkipNRMSDatabricks=true SkipNRMSDB=true SkipNRMSHigh=true SkipNRMSMedium=true SkipNRMSRDPSSH=true SkipNRMSSAW=true SkipNRMSMgmt=true
           az vm open-port -g ${{ env.testResourceGroup }} -n ${{ env.db2VmName }} --port 50000 --priority 100
           az vm extension set --name CustomScript \
-            --extension-instance-name liberty-aro-image-script \
-            --resource-group ${vmGroupName} --vm-name ${vmName} \
+            --extension-instance-name install-db2-in-docker \
+            --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.db2VmName }} \
             --publisher Microsoft.Azure.Extensions --version 2.0 \
             --settings "{\"fileUris\": [\"${{ env.scriptLocation }}install-db2.sh\"]}" \
             --protected-settings "{\"commandToExecute\":\"bash install-db2.sh ${{ env.db2inst1Password }}\"}"          
       - name: Build ${{ env.repoName }}
         run: |
           db2VmPublicIP=$(az vm show \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${{ env.db2VmName }} --show-details \
-              --query publicIps -o tsv)
+              --resource-group ${{ env.testResourceGroup }} --name ${{ env.db2VmName }} \
+              --show-details --query publicIps -o tsv)
           cd ${{ env.repoName }}
           mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME -DuseTrial=true \
             -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
