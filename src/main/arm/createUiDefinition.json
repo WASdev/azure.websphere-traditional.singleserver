@@ -350,11 +350,11 @@
                                 "type": "Microsoft.Common.DropDown",
                                 "label": "Choose database type",
                                 "toolTip": "Choose database type",
-                                "defaultValue": "IBM DB2",
+                                "defaultValue": "IBM Db2",
                                 "constraints": {
                                     "allowedValues": [
                                         {
-                                            "label": "IBM DB2",
+                                            "label": "IBM Db2",
                                             "value": "db2"
                                         }
                                     ],
