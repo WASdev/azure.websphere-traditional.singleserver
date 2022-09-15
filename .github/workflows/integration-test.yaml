@@ -2,6 +2,14 @@ name: integration-test
 on:
   workflow_dispatch:
     inputs:
+      databaseType:
+        description: 'Database connection'
+        required: true
+        default: 'db2'
+        type: choice
+        options:
+        - db2
+        - none
       deleteAzureResources:
         description: 'Delete Azure resources at the end'
         required: true
@@ -10,10 +18,14 @@ on:
   # Allows you to run this workflow using GitHub APIs
   # PERSONAL_ACCESS_TOKEN=<GITHUB_PERSONAL_ACCESS_TOKEN>
   # REPO_NAME=WASdev/azure.websphere-traditional.singleserver
-  # Delete Azure resources at the end
+  # Enable IBM DB2 database connection and delete Azure resources at the end
   # curl --verbose -XPOST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/integration-test.yaml/dispatches --data '{"ref": "main"}'
-  # Keep Azure resources at the end
+  # Enable IBM DB2 database connection and keep Azure resources at the end
   # curl --verbose -XPOST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/integration-test.yaml/dispatches --data '{"ref": "main", "inputs":{"deleteAzureResources": "false"}}
+  # Disable IBM DB2 database connection and delete Azure resources at the end
+  # curl --verbose -XPOST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/integration-test.yaml/dispatches --data '{"ref": "main", "inputs":{"databaseType": "none"}}
+  # Disable IBM DB2 database connection and keep Azure resources at the end
+  # curl --verbose -XPOST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/integration-test.yaml/dispatches --data '{"ref": "main", "inputs":{"databaseType": "none", "deleteAzureResources": "false"}}
   repository_dispatch:
     types: [integration-test]
   # sample request
@@ -81,6 +93,7 @@ jobs:
         with:
           creds: ${{ env.azureCredentials }}
       - name: Deploy an IBM DB2 server on Azure VM
+        if: ${{ inputs.databaseType == 'db2' }}
         run: |
           az group create -n ${{ env.testResourceGroup }} -l ${{ env.location }}
           az vm create \
@@ -99,16 +112,25 @@ jobs:
             --protected-settings "{\"commandToExecute\":\"bash install-db2.sh ${{ env.db2inst1Password }}\"}"          
       - name: Build ${{ env.repoName }}
         run: |
-          db2VmPublicIP=$(az vm show \
+          cd ${{ env.repoName }}
+          if ${{ inputs.databaseType != 'none' }}; then
+            db2VmPublicIP=$(az vm show \
               --resource-group ${{ env.testResourceGroup }} --name ${{ env.db2VmName }} \
               --show-details --query publicIps -o tsv)
-          cd ${{ env.repoName }}
-          mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME -DuseTrial=true \
-            -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
-            -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
-            -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
-            -DenableDB=true -DdatabaseType=db2 -DjdbcDataSourceJNDIName=jdbc/Sample -DdsConnectionURL=jdbc:db2://${db2VmPublicIP}:50000/sample -DdbUser=db2inst1 -DdbPassword=${{ env.db2inst1Password }} \
-            -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
+            mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME -DuseTrial=true \
+              -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
+              -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
+              -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
+              -DenableDB=true -DdatabaseType=db2 -DjdbcDataSourceJNDIName=jdbc/Sample -DdsConnectionURL=jdbc:db2://${db2VmPublicIP}:50000/sample -DdbUser=db2inst1 -DdbPassword=${{ env.db2inst1Password }} \
+              -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
+          else
+            mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME -DuseTrial=true \
+              -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
+              -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
+              -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
+              -DenableDB=false -DdatabaseType=db2 \
+              -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
+          fi
       - name: Deploy a twas-single server on Azure VM
         run: |
           cd ${{ env.repoName }}/target/cli
