@@ -317,7 +317,7 @@
                         "type": "Microsoft.Common.TextBlock",
                         "visible": true,
                         "options": {
-                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure the WebSphere Server to connect to the desired pre-existing database. The database must be network accessible to the VNET and subnets configured in the Networking."
+                            "text": "Selecting 'Yes' here and providing the configuration will cause the offer to configure WebSphere to connect to the desired pre-existing database. The database must be network accessible to the VNET and subnets configured in Networking."
                         }
                     },
                     {
@@ -392,7 +392,7 @@
                                 "name": "dbUser",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "Database username",
-                                "toolTip": "Use only letters and numbers",
+                                "toolTip": "Database username",
                                 "defaultValue": "",
                                 "constraints": {
                                     "required": true,
