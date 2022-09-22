@@ -34,6 +34,24 @@
         },
         "wasPassword": {
             "value": "${wasPassword}"
+        },
+        "enableDB": {
+            "value": "${enableDB}"
+        },
+        "databaseType": {
+            "value": "${databaseType}"
+        },
+        "jdbcDataSourceJNDIName": {
+            "value": "${jdbcDataSourceJNDIName}"
+        },
+        "dsConnectionURL": {
+            "value": "${dsConnectionURL}"
+        },
+        "dbUser": {
+            "value": "${dbUser}"
+        },
+        "dbPassword": {
+            "value": "${dbPassword}"
         }
     }
 }

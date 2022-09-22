@@ -98,15 +98,42 @@ if [ ${result} != $ENTITLED ] && [ ${result} != $EVALUATION ]; then
 fi
 
 # Check required parameters
-if [ "$2" == "" ]; then 
+if [ "$3" == "True" ] && [ "${8}" == "" ]; then 
   echo "Usage:"
-  echo "  ./install.sh [adminUserName] [adminPassword]"
+  echo "  ./install.sh [adminUserName] [adminPassword] True [databaseType] [jdbcDataSourceJNDIName] [dsConnectionURL] [dbUser] [dbPassword]"
+  exit 1
+elif [ "$3" == "" ]; then 
+  echo "Usage:"
+  echo "  ./install.sh [adminUserName] [adminPassword] False"
   exit 1
 fi
 adminUserName=$1
 adminPassword=$2
+enableDB=$3
+databaseType=$4
+jdbcDataSourceJNDIName=$5
+dsConnectionURL=$6
+dbUser=$7
+dbPassword=$8
 
 create_standalone_application_profile AppSrv1 $(hostname) $(hostname)Node01 "$adminUserName" "$adminPassword"
 add_admin_credentials_to_soap_client_props AppSrv1 "$adminUserName" "$adminPassword"
 create_was_service server1 AppSrv1
 ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
+
+# Configure JDBC provider and data source
+if [ "$enableDB" == "True" ]; then
+    jdbcDataSourceName=dataSource-$databaseType
+    ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$databaseType" "$jdbcDataSourceName" "$jdbcDataSourceJNDIName" "$dsConnectionURL" "$dbUser" "$dbPassword"
+
+    # Restart server
+    ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/stopServer.sh server1
+    ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
+
+    # Test connection for the created data source
+    ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/wsadmin.sh -lang jython -c "AdminControl.testConnection(AdminConfig.getid('/DataSource:${jdbcDataSourceName}/'))"
+    if [[ $? != 0 ]]; then
+        echo "$(date): Test data source connection failed."
+        exit 1
+    fi
+fi
