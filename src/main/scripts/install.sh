@@ -100,7 +100,7 @@ fi
 # Check required parameters
 if [ "$3" == "True" ] && [ "${8}" == "" ]; then 
   echo "Usage:"
-  echo "  ./install.sh [adminUserName] [adminPassword] True [databaseType] [jdbcDataSourceJNDIName] [dsConnectionURL] [dbUser] [dbPassword]"
+  echo "  ./install.sh [adminUserName] [adminPassword] True [dbType] [jdbcDSJNDIName] [dsConnectionURL] [databaseUser] [databasePassword]"
   exit 1
 elif [ "$3" == "" ]; then 
   echo "Usage:"
@@ -110,11 +110,11 @@ fi
 adminUserName=$1
 adminPassword=$2
 enableDB=$3
-databaseType=$4
-jdbcDataSourceJNDIName=$5
+dbType=$4
+jdbcDSJNDIName=$5
 dsConnectionURL=$6
-dbUser=$7
-dbPassword=$8
+databaseUser=$7
+databasePassword=$8
 
 create_standalone_application_profile AppSrv1 $(hostname) $(hostname)Node01 "$adminUserName" "$adminPassword"
 add_admin_credentials_to_soap_client_props AppSrv1 "$adminUserName" "$adminPassword"
@@ -123,8 +123,8 @@ ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
 
 # Configure JDBC provider and data source
 if [ "$enableDB" == "True" ]; then
-    jdbcDataSourceName=dataSource-$databaseType
-    ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$databaseType" "$jdbcDataSourceName" "$jdbcDataSourceJNDIName" "$dsConnectionURL" "$dbUser" "$dbPassword"
+    jdbcDataSourceName=dataSource-$dbType
+    ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$dbType" "$jdbcDataSourceName" "$jdbcDSJNDIName" "$dsConnectionURL" "$databaseUser" "$databasePassword"
 
     # Restart server
     ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/stopServer.sh server1
