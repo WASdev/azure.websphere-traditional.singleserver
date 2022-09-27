@@ -97,7 +97,7 @@ jobs:
         with:
           creds: ${{ env.azureCredentials }}
       - name: Deploy an IBM DB2 server on Azure VM
-        if: ${{ inputs.databaseType == 'db2' || client_payload.databaseType == 'db2' }}
+        if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
         run: |
           az group create -n ${{ env.testResourceGroup }} -l ${{ env.location }}
           az vm create \
@@ -117,7 +117,7 @@ jobs:
       - name: Build ${{ env.repoName }}
         run: |
           cd ${{ env.repoName }}
-          if ${{ inputs.databaseType == 'db2' || client_payload.databaseType == 'db2' }}; then
+          if ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}; then
             db2VmPublicIP=$(az vm show \
               --resource-group ${{ env.testResourceGroup }} --name ${{ env.db2VmName }} \
               --show-details --query publicIps -o tsv)
