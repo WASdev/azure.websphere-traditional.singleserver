@@ -41,7 +41,7 @@ on:
   # curl --verbose -X POST https://api.github.com/repos/${REPO_NAME}/dispatches -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${PERSONAL_ACCESS_TOKEN}" --data '{"event_type": "integration-test", "client_payload": {"databaseType": "none", "deleteAzureResources": false}}'
 env:
   # Latest version is at https://github.com/Azure/azure-cli/releases
-  azCliVersion: 2.31.0
+  azCliVersion: 2.40.0
   # Commit hash from https://github.com/Azure/arm-ttk/commits/master
   refArmttk: b98c03608a20bbee4f2061b23bdeece1c2d214b8
   # Commit hash from https://github.com/Azure/azure-javaee-iaas/commits/main
