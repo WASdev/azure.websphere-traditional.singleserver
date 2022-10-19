@@ -57,6 +57,21 @@ if [ $dbType == "db2" ]; then
     sed -i "s#\${DB2_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
     sed -i "s/\${DB2_SERVER_NAME}/${db2ServerName}/g" $createDsScript
     sed -i "s/\${PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
+elif [ $dbType == "oracle" ]; then
+    # Download jdbc drivers
+    jdbcDriverPath="$wasRootPath"/oracle/java
+    mkdir -p "$jdbcDriverPath"
+    curl -Lo ${jdbcDriverPath}/ojdbc8.jar https://download.oracle.com/otn-pub/otn_software/jdbc/1916/ojdbc8.jar
+    jdbcDriverClassPath=$(realpath "$jdbcDriverPath"/ojdbc8.jar)
+
+    # Replace placeholder strings with user-input parameters
+    sed -i "s/\${WAS_SERVER_NAME}/${wasServerName}/g" $createDsScript
+    sed -i "s#\${ORACLE_JDBC_DRIVER_CLASS_PATH}#${jdbcDriverClassPath}#g" $createDsScript
+    sed -i "s/\${ORACLE_DATABASE_USER_NAME}/${databaseUser}/g" $createDsScript
+    sed -i "s/\${ORACLE_DATABASE_USER_PASSWORD}/${databasePassword}/g" $createDsScript
+    sed -i "s/\${ORACLE_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
+    sed -i "s#\${ORACLE_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
+    sed -i "s#\${ORACLE_DATABASE_URL}#${dsConnectionURL}#g" $createDsScript
 fi
 
 # Create JDBC provider and data source using jython file
