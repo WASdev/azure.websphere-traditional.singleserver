@@ -90,6 +90,7 @@ param vnetRGNameForSingleServer string = resourceGroup().name
 param enableDB bool = false
 @allowed([
   'db2'
+  'oracle'
 ])
 @description('One of the supported database types')
 param databaseType string = 'db2'
