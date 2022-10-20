@@ -18,7 +18,7 @@
 wasRootPath=$1                                      # Root path of WebSphere
 wasProfileName=$2                                   # WAS profile name
 wasServerName=$3                                    # WAS server name
-dbType=$4                                           # Supported database types: db2
+dbType=$4                                           # Supported database types: [db2, oracle]
 jdbcDataSourceName=$5                               # JDBC Datasource name
 jdbcDSJNDIName=$(echo "${6}" | base64 -d)           # JDBC Datasource JNDI name
 dsConnectionURL=$(echo "${7}" | base64 -d)          # JDBC Datasource connection String
@@ -29,6 +29,10 @@ databasePassword=$(echo "${9}" | base64 -d)         # Database user password
 createDsTemplate=create-ds-${dbType}.py.template
 createDsScript=create-ds-${dbType}.py
 cp $createDsTemplate $createDsScript
+
+# Create JDBC driver directory
+jdbcDriverPath="$wasRootPath"/${dbType}/java
+mkdir -p "$jdbcDriverPath"
 
 if [ $dbType == "db2" ]; then
     regex="^jdbc:db2://([^/]+):([0-9]+)/([[:alnum:]_-]+)"
@@ -42,8 +46,6 @@ if [ $dbType == "db2" ]; then
     fi
 
     # Copy jdbc drivers
-    jdbcDriverPath="$wasRootPath"/db2/java
-    mkdir -p "$jdbcDriverPath"
     find "$wasRootPath" -name "db2jcc*.jar" | xargs -I{} cp {} "$jdbcDriverPath"
     jdbcDriverPath=$(realpath "$jdbcDriverPath")
 
@@ -59,8 +61,6 @@ if [ $dbType == "db2" ]; then
     sed -i "s/\${PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
 elif [ $dbType == "oracle" ]; then
     # Download jdbc drivers
-    jdbcDriverPath="$wasRootPath"/oracle/java
-    mkdir -p "$jdbcDriverPath"
     curl -Lo ${jdbcDriverPath}/ojdbc8.jar https://download.oracle.com/otn-pub/otn_software/jdbc/1916/ojdbc8.jar
     jdbcDriverClassPath=$(realpath "$jdbcDriverPath"/ojdbc8.jar)
 
