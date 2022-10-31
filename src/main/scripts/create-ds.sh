@@ -34,6 +34,9 @@ cp $createDsTemplate $createDsScript
 jdbcDriverPath="$wasRootPath"/${dbType}/java
 mkdir -p "$jdbcDriverPath"
 
+# retry attempt for curl command
+retryMaxAttempt=5
+
 if [ $dbType == "db2" ]; then
     regex="^jdbc:db2://([^/]+):([0-9]+)/([[:alnum:]_-]+)"
     if [[ $dsConnectionString =~ $regex ]]; then 
@@ -61,7 +64,7 @@ if [ $dbType == "db2" ]; then
     sed -i "s/\${PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
 elif [ $dbType == "oracle" ]; then
     # Download jdbc drivers
-    curl -Lo ${jdbcDriverPath}/ojdbc8.jar https://download.oracle.com/otn-pub/otn_software/jdbc/1916/ojdbc8.jar
+    curl --retry ${retryMaxAttempt} -Lo ${jdbcDriverPath}/ojdbc8.jar https://download.oracle.com/otn-pub/otn_software/jdbc/1916/ojdbc8.jar
     jdbcDriverClassPath=$(realpath "$jdbcDriverPath"/ojdbc8.jar)
 
     # Replace placeholder strings with user-input parameters
