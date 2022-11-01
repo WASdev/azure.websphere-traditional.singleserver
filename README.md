@@ -27,7 +27,7 @@
 1. Build the project by replacing all placeholder `${<place_holder>}` with valid values
 
    ```bash
-   mvn -Dgit.repo=<repo_user> -Dgit.tag=<repo_tag> -DuseTrial=true -DvmSize=<vmSize> -DdnsLabelPrefix=<dnsLabelPrefix> -DadminUsername=<adminUsername> -DadminPasswordOrKey=<adminPassword|adminSSHPublicKey> -DauthenticationType=<password|sshPublicKey> -DwasUsername=<wasUsername> -DwasPassword=<wasPassword> -DenableDB=<true|false> -DdatabaseType=db2 -DjdbcDataSourceJNDIName=<jdbcDataSourceJNDIName> -DdsConnectionURL=<dsConnectionURL> -DdbUser=<dbUser> -DdbPassword=<dbPassword> -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
+   mvn -Dgit.repo=<repo_user> -Dgit.tag=<repo_tag> -DuseTrial=true -DvmSize=<vmSize> -DdnsLabelPrefix=<dnsLabelPrefix> -DadminUsername=<adminUsername> -DadminPasswordOrKey=<adminPassword|adminSSHPublicKey> -DauthenticationType=<password|sshPublicKey> -DwasUsername=<wasUsername> -DwasPassword=<wasPassword> -DenableDB=<true|false> -DdatabaseType=<db2|oracle> -DjdbcDataSourceJNDIName=<jdbcDataSourceJNDIName> -DdsConnectionURL=<dsConnectionURL> -DdbUser=<dbUser> -DdbPassword=<dbPassword> -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
    ```
 
 1. Change to `./target/cli` directory

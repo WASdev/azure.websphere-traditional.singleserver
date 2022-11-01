@@ -100,7 +100,7 @@ fi
 # Check required parameters
 if [ "$3" == "True" ] && [ "${8}" == "" ]; then 
   echo "Usage:"
-  echo "  ./install.sh [adminUserName] [adminPassword] True [dbType] [jdbcDSJNDIName] [dsConnectionURL] [databaseUser] [databasePassword]"
+  echo "  ./install.sh [adminUserName] [adminPassword] True [dbType] [jdbcDSJNDIName] [dsConnectionString] [databaseUser] [databasePassword]"
   exit 1
 elif [ "$3" == "" ]; then 
   echo "Usage:"
@@ -112,7 +112,7 @@ adminPassword=$2
 enableDB=$3
 dbType=$4
 jdbcDSJNDIName=$5
-dsConnectionURL=$6
+dsConnectionString=$6
 databaseUser=$7
 databasePassword=$8
 
@@ -124,7 +124,7 @@ ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/startServer.sh server1
 # Configure JDBC provider and data source
 if [ "$enableDB" == "True" ]; then
     jdbcDataSourceName=dataSource-$dbType
-    ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$dbType" "$jdbcDataSourceName" "$jdbcDSJNDIName" "$dsConnectionURL" "$databaseUser" "$databasePassword"
+    ./create-ds.sh ${WAS_BASE_INSTALL_DIRECTORY} AppSrv1 server1 "$dbType" "$jdbcDataSourceName" "$jdbcDSJNDIName" "$dsConnectionString" "$databaseUser" "$databasePassword"
 
     # Restart server
     ${WAS_BASE_INSTALL_DIRECTORY}/profiles/AppSrv1/bin/stopServer.sh server1
