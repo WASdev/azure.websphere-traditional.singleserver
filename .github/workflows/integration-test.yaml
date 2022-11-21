@@ -117,7 +117,7 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.dbInstanceName }} \
             --publisher Microsoft.Azure.Extensions --version 2.0 \
             --settings "{\"fileUris\": [\"${{ env.scriptLocation }}install-db2.sh\"]}" \
-            --protected-settings "{\"commandToExecute\":\"bash install-db2.sh ${{ env.db2inst1Password }}\"}"
+            --protected-settings "{\"commandToExecute\":\"bash install-db2.sh ${{ env.dbPassword }}\"}"
       - name: Deploy an Oracle database server on Azure VM
         if: ${{ inputs.databaseType == 'oracle' || github.event.client_payload.databaseType == 'oracle' }}
         run: |
@@ -136,14 +136,14 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.dbInstanceName }} \
             --publisher Microsoft.Azure.Extensions --version 2.0 \
             --settings "{\"fileUris\": [\"${{ env.scriptLocation }}install-oracle-main.sh\", \"${{ env.scriptLocation }}install-oracle.sh\"]}" \
-            --protected-settings "{\"commandToExecute\":\"bash install-oracle-main.sh ${{ env.oracleDBPassword }}\"}"
+            --protected-settings "{\"commandToExecute\":\"bash install-oracle-main.sh ${{ env.dbPassword }}\"}"
       - name: Deploy an instance of Azure SQL Database
         if: ${{ inputs.databaseType == 'sqlserver' || github.event.client_payload.databaseType == 'sqlserver' }}
         run: |
           az group create -n ${{ env.testResourceGroup }} -l ${{ env.location }}
           az sql server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
-            --admin-user testuser --admin-password ${{ env.sqlserverDBPassword }} \
+            --admin-user testuser --admin-password ${{ env.dbPassword }} \
             --location ${{ env.location }}
           host=$(az sql server show \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
@@ -160,7 +160,7 @@ jobs:
           az group create -n ${{ env.testResourceGroup }} -l ${{ env.location }}
           az postgres server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
-            --admin-user testuser --admin-password ${{ env.postgresqlDBPassword }} \
+            --admin-user testuser --admin-password ${{ env.dbPassword }} \
             --location ${{ env.location }}
           host=$(az postgres server show \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
