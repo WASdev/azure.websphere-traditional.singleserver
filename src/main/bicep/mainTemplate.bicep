@@ -91,6 +91,8 @@ param enableDB bool = false
 @allowed([
   'db2'
   'oracle'
+  'sqlserver'
+  'postgres'
 ])
 @description('One of the supported database types')
 param databaseType string = 'db2'
@@ -335,6 +337,8 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
         uri(const_scriptLocation, 'create-ds.sh${_artifactsLocationSasToken}')
         uri(const_scriptLocation, 'create-ds-db2.py.template${_artifactsLocationSasToken}')
         uri(const_scriptLocation, 'create-ds-oracle.py.template${_artifactsLocationSasToken}')
+        uri(const_scriptLocation, 'create-ds-sqlserver.py.template${_artifactsLocationSasToken}')
+        uri(const_scriptLocation, 'create-ds-postgres.py.template${_artifactsLocationSasToken}')
       ]
     }
     protectedSettings: {

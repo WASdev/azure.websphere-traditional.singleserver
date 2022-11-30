@@ -39,7 +39,7 @@ retryMaxAttempt=5
 
 if [ $dbType == "db2" ]; then
     regex="^jdbc:db2://([^/]+):([0-9]+)/([[:alnum:]_-]+)"
-    if [[ $dsConnectionString =~ $regex ]]; then 
+    if [[ "$dsConnectionString" =~ $regex ]]; then 
         db2ServerName="${BASH_REMATCH[1]}"
         db2ServerPortNumber="${BASH_REMATCH[2]}"
         db2DBName="${BASH_REMATCH[3]}"
@@ -61,7 +61,7 @@ if [ $dbType == "db2" ]; then
     sed -i "s/\${DB2_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
     sed -i "s#\${DB2_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
     sed -i "s/\${DB2_SERVER_NAME}/${db2ServerName}/g" $createDsScript
-    sed -i "s/\${PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
+    sed -i "s/\${DB2_PORT_NUMBER}/${db2ServerPortNumber}/g" $createDsScript
 elif [ $dbType == "oracle" ]; then
     # Download jdbc drivers
     curl --retry ${retryMaxAttempt} -Lo ${jdbcDriverPath}/ojdbc8.jar https://download.oracle.com/otn-pub/otn_software/jdbc/1916/ojdbc8.jar
@@ -75,6 +75,44 @@ elif [ $dbType == "oracle" ]; then
     sed -i "s/\${ORACLE_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
     sed -i "s#\${ORACLE_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
     sed -i "s#\${ORACLE_DATABASE_URL}#${dsConnectionString}#g" $createDsScript
+elif [ $dbType == "sqlserver" ]; then
+    regex="^jdbc:sqlserver://([^/]+):([0-9]+);database=([[:alnum:]_-]+)"
+    if [[ "$dsConnectionString" =~ $regex ]]; then 
+        sqlServerServerName="${BASH_REMATCH[1]}"
+        sqlServerPortNumber="${BASH_REMATCH[2]}"
+        sqlServerDBName="${BASH_REMATCH[3]}"
+    else
+        echo "$dsConnectionString doesn't match the required format of Microsoft SQL Server data source connection string."
+        exit 1
+    fi
+
+    # Download jdbc drivers
+    curl --retry ${retryMaxAttempt} -Lo ${jdbcDriverPath}/mssql-jdbc-11.2.1.jre8.jar https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/11.2.1.jre8/mssql-jdbc-11.2.1.jre8.jar
+    jdbcDriverClassPath=$(realpath "$jdbcDriverPath"/mssql-jdbc-11.2.1.jre8.jar)
+
+    # Replace placeholder strings with user-input parameters
+    sed -i "s/\${WAS_SERVER_NAME}/${wasServerName}/g" $createDsScript
+    sed -i "s#\${SQLSERVER_JDBC_DRIVER_CLASS_PATH}#${jdbcDriverClassPath}#g" $createDsScript
+    sed -i "s/\${SQLSERVER_DATABASE_USER_NAME}/${databaseUser}/g" $createDsScript
+    sed -i "s/\${SQLSERVER_DATABASE_USER_PASSWORD}/${databasePassword}/g" $createDsScript
+    sed -i "s/\${SQLSERVER_DATABASE_NAME}/${sqlServerDBName}/g" $createDsScript
+    sed -i "s/\${SQLSERVER_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
+    sed -i "s#\${SQLSERVER_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
+    sed -i "s/\${SQLSERVER_SERVER_NAME}/${sqlServerServerName}/g" $createDsScript
+    sed -i "s/\${SQLSERVER_PORT_NUMBER}/${sqlServerPortNumber}/g" $createDsScript
+elif [ $dbType == "postgres" ]; then
+    # Download jdbc drivers
+    curl --retry ${retryMaxAttempt} -Lo ${jdbcDriverPath}/postgresql-42.5.0.jar https://jdbc.postgresql.org/download/postgresql-42.5.0.jar
+    jdbcDriverClassPath=$(realpath "$jdbcDriverPath"/postgresql-42.5.0.jar)
+
+    # Replace placeholder strings with user-input parameters
+    sed -i "s/\${WAS_SERVER_NAME}/${wasServerName}/g" $createDsScript
+    sed -i "s#\${POSTGRESQL_JDBC_DRIVER_CLASS_PATH}#${jdbcDriverClassPath}#g" $createDsScript
+    sed -i "s/\${POSTGRESQL_DATABASE_USER_NAME}/${databaseUser}/g" $createDsScript
+    sed -i "s/\${POSTGRESQL_DATABASE_USER_PASSWORD}/${databasePassword}/g" $createDsScript
+    sed -i "s/\${POSTGRESQL_DATASOURCE_NAME}/${jdbcDataSourceName}/g" $createDsScript
+    sed -i "s#\${POSTGRESQL_DATASOURCE_JNDI_NAME}#${jdbcDSJNDIName}#g" $createDsScript
+    sed -i "s#\${POSTGRESQL_DATABASE_URL}#${dsConnectionString}#g" $createDsScript
 fi
 
 # Create JDBC provider and data source using jython file
