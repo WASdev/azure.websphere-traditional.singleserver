@@ -364,10 +364,6 @@
                                         {
                                             "label": "Microsoft SQL Server",
                                             "value": "sqlserver"
-                                        },
-                                        {
-                                            "label": "PostgreSQL",
-                                            "value": "postgres"
                                         }
                                     ],
                                     "required": true
