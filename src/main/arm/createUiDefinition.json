@@ -175,18 +175,6 @@
                         "count": "1"
                     },
                     {
-                        "name": "dnsLabelPrefix",
-                        "type": "Microsoft.Common.TextBox",
-                        "label": "DNS label prefix",
-                        "toolTip": "The string to prepend to the DNS label, default is 'was'.",
-                        "defaultValue": "was",
-                        "constraints": {
-                            "required": true,
-                            "regex": "^[a-z0-9A-Z]{3,24}$",
-                            "validationMessage": "The prefix must be between 3 and 24 characters long and contain letters, numbers only."
-                        }
-                    },
-                    {
                         "name": "adminUsername",
                         "type": "Microsoft.Common.TextBox",
                         "label": "VM administrator",
@@ -244,6 +232,33 @@
                             "regex": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{12,}$",
                             "validationMessage": "The password must contain at least 12 characters, with at least 1 uppercase letter, 1 lowercase letter and 1 number, and special characters are not allowed."
                         }
+                    },
+                    {
+                        "name": "advanced",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Advanced",
+                        "elements": [
+                            {
+                                "name": "acceptDefaults",
+                                "type": "Microsoft.Common.CheckBox",
+                                "label": "Accept defaults for advanced configuration",
+                                "defaultValue": true,
+                                "toolTip": "Uncheck to edit advanced configuration."
+                            },
+                            {
+                                "name": "dnsLabelPrefix",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "DNS label prefix",
+                                "toolTip": "The string to prepend to the DNS label, default is 'was'.",
+                                "defaultValue": "was",
+                                "constraints": {
+                                    "required": true,
+                                    "regex": "^[a-z0-9A-Z]{3,24}$",
+                                    "validationMessage": "The prefix must be between 3 and 24 characters long and contain letters, numbers only."
+                                },
+                                "visible": "[not(bool(steps('SingleServerConfig').advanced.acceptDefaults))]"
+                            }
+                        ]
                     }
                 ]
             },
@@ -479,7 +494,7 @@
             "ibmUserPwd": "[basics('ibmUserPwd')]",
             "shareCompanyName": "[bool(basics('shareCompanyNameCheck'))]",
             "vmSize": "[steps('SingleServerConfig').vmSizeSelect]",
-            "dnsLabelPrefix": "[steps('SingleServerConfig').dnsLabelPrefix]",
+            "dnsLabelPrefix": "[if(empty(steps('SingleServerConfig').advanced.dnsLabelPrefix), 'was', steps('SingleServerConfig').advanced.dnsLabelPrefix)]",
             "adminUsername": "[steps('SingleServerConfig').adminUsername]",
             "adminPasswordOrKey": "[if(equals(steps('SingleServerConfig').adminPasswordOrKey.authenticationType, 'password'), steps('SingleServerConfig').adminPasswordOrKey.password, steps('SingleServerConfig').adminPasswordOrKey.sshPublicKey)]",
             "authenticationType": "[steps('SingleServerConfig').adminPasswordOrKey.authenticationType]",
