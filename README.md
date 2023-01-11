@@ -65,6 +65,7 @@ The offer provisions the following Azure resources and a WebSphere Application S
   * An OS disk and a data disk attached to the VM.
 * Key software components
   * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configurables:
+    * Options to deploy with existing WebSphere entitlement or with evaluation licens.
     * WebSphere administrator credential.
     * Database data source connection if user selects to connect a database.
   * IBM Java JDK 8.
