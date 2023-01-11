@@ -59,11 +59,12 @@ The offer provisions the following Azure resources and a WebSphere Application S
   * A network interface.
   * A public IP address assigned to the network interface if user selects to create a new virtual network.
 * Computing resources
-  * A RHEL 8.4 VM with the followings configurable parameters:
-    * VM size
-    * VM administrator authentication type and the related credential
-  * An OS disk and a data disk attached to the VM
+  * A RHEL 8.4 VM with the followings configurables:
+    * VM size.
+    * VM administrator authentication type and the related credential.
+  * An OS disk and a data disk attached to the VM.
 * Key software components
-  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configurable parameters:
-    * WebSphere administrator credential
-  * IBM Java JDK 8
+  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configurables:
+    * WebSphere administrator credential.
+    * Database data source connection if user selects to connect a database.
+  * IBM Java JDK 8.
