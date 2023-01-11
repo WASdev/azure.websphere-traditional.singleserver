@@ -68,4 +68,4 @@ The offer provisions the following Azure resources and a WebSphere Application S
     * Options to deploy with existing WebSphere entitlement or with evaluation licens.
     * WebSphere administrator credential.
     * Database data source connection if user selects to connect a database.
-  * IBM Java JDK 8.
+  * IBM Java JDK 8 installed on the VM.
