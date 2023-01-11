@@ -45,7 +45,7 @@
    1. Open the resource group you specified to deploy WebSphere Cluster
    1. Navigate to "Deployments > specified_deployment_name > Outputs"
    1. Copy value of property `adminSecuredConsole` and browse it with credentials you specified in cluster creation
-1. To visit sevlets of `DefaultApplication` which is installed in the server by default
+1. To visit servlets of `DefaultApplication` which is installed in the server by default
    1. Copy value of property `snoopServletUrl` and open it in your browser
    1. Copy value of property `hitCountServletUrl` and open it in your browser
 
