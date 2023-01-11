@@ -48,3 +48,22 @@
 1. To visit sevlets of `DefaultApplication` which is installed in the server by default
    1. Copy value of property `snoopServletUrl` and open it in your browser
    1. Copy value of property `hitCountServletUrl` and open it in your browser
+
+## Deployment Description
+
+The offer provisions the following Azure resources and a WebSphere Application Server Base 9.0.5.x.
+
+* Network resources
+  * A virtual network and a subnet. User can also select to bring own virtual network.
+  * A network security group if user selects to create a new virtual network.
+  * A network interface.
+  * A public IP address assigned to the network interface if user selects to create a new virtual network.
+* Computing resources
+  * A RHEL 8.4 VM with the followings configurable parameters:
+    * VM size
+    * VM administrator authentication type and the related credential
+  * An OS disk and a data disk attached to the VM
+* Key software components
+  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configurable parameters:
+    * WebSphere administrator credential
+  * IBM Java JDK 8
