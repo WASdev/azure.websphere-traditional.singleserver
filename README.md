@@ -51,21 +51,23 @@
 
 ## Deployment Description
 
-The offer provisions the following Azure resources and a WebSphere Application Server Base 9.0.5.x.
+The offer provisions the following Azure resources and a traditional WebSphere Application Server Base 
 
+* Computing resources
+  * A VM with the following configuration:
+    * OS: RHEL 8.4
+    * JDK: IBM Java JDK 8
+    * WebSphere Traditional version: 9.0.5.x.
+  * An OS disk and a data disk attached to the VM.
 * Network resources
-  * A virtual network and a subnet. User can also select to bring own virtual network.
+  * A virtual network and a subnet. User can also select to deploy into a pre-existing virtual network.
   * A network security group if user selects to create a new virtual network.
   * A network interface.
   * A public IP address assigned to the network interface if user selects to create a new virtual network.
-* Computing resources
-  * A RHEL 8.4 VM with the followings configurables:
-    * VM size.
-    * VM administrator authentication type and the related credential.
-  * An OS disk and a data disk attached to the VM.
 * Key software components
-  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configurables:
+  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configuration:
+    * The `WAS_INSTALL_ROOT` is `/datadrive/IBM/WebSphere/Base/V9`.
     * Options to deploy with existing WebSphere entitlement or with evaluation licens.
     * WebSphere administrator credential.
     * Database data source connection if user selects to connect a database.
-  * IBM Java JDK 8 installed on the VM.
+  * IBM Java JDK 8. The `JAVA_HOME` is `${WAS_INSTALL_ROOT}/java/8.0`.
