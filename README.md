@@ -45,6 +45,29 @@
    1. Open the resource group you specified to deploy WebSphere Cluster
    1. Navigate to "Deployments > specified_deployment_name > Outputs"
    1. Copy value of property `adminSecuredConsole` and browse it with credentials you specified in cluster creation
-1. To visit sevlets of `DefaultApplication` which is installed in the server by default
+1. To visit servlets of `DefaultApplication` which is installed in the server by default
    1. Copy value of property `snoopServletUrl` and open it in your browser
    1. Copy value of property `hitCountServletUrl` and open it in your browser
+
+## Deployment Description
+
+The offer provisions the following Azure resources and a traditional WebSphere Application Server Base 
+
+* Computing resources
+  * A VM with the following configuration:
+    * OS: RHEL 8.4
+    * JDK: IBM Java JDK 8
+    * WebSphere Traditional version: 9.0.5.x.
+  * An OS disk and a data disk attached to the VM.
+* Network resources
+  * A virtual network and a subnet. User can also select to deploy into a pre-existing virtual network.
+  * A network security group if user selects to create a new virtual network.
+  * A network interface.
+  * A public IP address assigned to the network interface if user selects to create a new virtual network.
+* Key software components
+  * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configuration:
+    * The `WAS_INSTALL_ROOT` is `/datadrive/IBM/WebSphere/Base/V9`.
+    * Options to deploy with existing WebSphere entitlement or with evaluation licens.
+    * WebSphere administrator credential.
+    * Database data source connection if user selects to connect a database.
+  * IBM Java JDK 8. The `JAVA_HOME` is `${WAS_INSTALL_ROOT}/java/8.0`.
