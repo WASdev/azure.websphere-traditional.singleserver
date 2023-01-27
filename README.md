@@ -51,7 +51,7 @@
 
 ## Deployment Description
 
-The offer provisions the following Azure resources and a traditional WebSphere Application Server Base 
+The offer provisions a traditional WebSphere Application Server Base and supporting Azure resources.
 
 * Computing resources
   * A VM with the following configuration:
@@ -66,8 +66,8 @@ The offer provisions the following Azure resources and a traditional WebSphere A
   * A public IP address assigned to the network interface if user selects to create a new virtual network.
 * Key software components
   * A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configuration:
-    * The `WAS_INSTALL_ROOT` is `/datadrive/IBM/WebSphere/Base/V9`.
+    * The **WAS_INSTALL_ROOT** is **/datadrive/IBM/WebSphere/Base/V9**.
     * Options to deploy with existing WebSphere entitlement or with evaluation licens.
     * WebSphere administrator credential.
     * Database data source connection if user selects to connect a database.
-  * IBM Java JDK 8. The `JAVA_HOME` is `${WAS_INSTALL_ROOT}/java/8.0`.
+  * IBM Java JDK 8. The **JAVA_HOME** is **${WAS_INSTALL_ROOT}/java/8.0**.
