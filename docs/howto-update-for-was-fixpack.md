@@ -49,7 +49,7 @@ Please follow sections below in order to update the solution for next tWAS base 
    1. Sign into [Microsoft Partner Center](https://partner.microsoft.com/dashboard/commercial-marketplace/overview):
       * Select the Directory `IBM-Alliance-Microsoft Partner Network-Global-Tenant`
       * Expand `Build solutions` and choose `Publish your solution`.  
-      * Click to open the offer for `2022-01-06-twas-single-server-base-image` (`<date>-twas-single-server-base-cis-image` for twas-base-cis image)
+      * Click to open the offer for `2022-01-06-twas-single-server-base-image` (`<date>-twas-single-server-cis-base-image` for twas-base-cis image)
       * Click `Plan overview` the click to open the plan 
       * **IMPORTANT** Click `Pricing and availability` to verify the plan is hidden from the marketplace
          * Ensure the `Hide plan` checkbox is checked
