@@ -1,45 +1,47 @@
 <h1>Name</h1>
 <p>IBM WebSphere Application Server Single Instance</p>
 <h1>Search results summary</h1>
-<p>IBM WebSphere Application Server (traditional) Single Instance on a Virtual Machine.</p>
+<p>Run a single instance of IBM WebSphere Application Server (traditional) on an Azure VM.</p>
 <h1>Short description</h1>
-<p>Provisions an IBM WebSphere Application Server (traditional) Single Instance on an Azure Virtual Machine, including the Administrative Console.</p>
+<p>Provisions a single instance of IBM WebSphere Application Server (traditional) on an Azure VM,
+including the Administrative Console.</p>
 <h1>Description</h1>
-<p>The offer provisions a traditional WebSphere Application Server Base and supporting Azure resources.</p>
+<p>IBM WebSphere Application Server (traditional) is an industry-leading Java runtime powering some of the most mission critical
+enterprise applications across geographies and environments. This solution automates most boilerplate steps to provision a single
+WebSphere instance on an Azure Virtual Machine. Once initial provisioning is complete, you are completely free to customize deployments
+further. The solution is jointly developed by IBM and Microsoft.</p>
+<p>The following resources are automatically provisioned by the offer.</p>
 <ul>
-<li>Computing resources<ul>
-<li>A VM with the following configuration:<ul>
-<li>OS: RHEL 8.4</li>
-<li>JDK: IBM Java JDK 8</li>
-<li>WebSphere Traditional version: 9.0.5.x.</li>
+<li>Latest Red Hat Enterprise Linux (RHEL) VM with fixes</li>
+<li>Latest WebSphere Application Server Base 9.0.5.x instance with fixes (<strong>WAS_INSTALL_ROOT</strong> is
+<strong>/datadrive/IBM/WebSphere/Base/V9</strong>).</li>
+<li>Administrative Console</li>
+<li>Latest IBM JDK 8 with fixes (<strong>JAVA_HOME</strong> is <strong>${WAS_INSTALL_ROOT}/java/8.0</strong>).</li>
+<li>Configured data source connection (Db2, Oracle DB, Azure SQL) - optional</li>
+<li>Virtual network and subnet (alternatively, you can deploy to an existing virtual network)</li>
+<li>Network security group</li>
+<li>Network interface with public IP address</li>
+<li>OS and data disk attached to VM</li>
 </ul>
-</li>
-<li>An OS disk and a data disk attached to the VM.</li>
+<p>This offer includes both evaluation and Bring-Your-Own-License (BYOL) options for WebSphere. When using BYOL you will be required to
+enter your registered IBM ID prior to successfully deploying this offer and your IBM ID must have active WebSphere entitlements
+associated with it. If you find that provisioning fails due to lack of entitlements, please contact the primary or secondary contacts for
+your IBM Passport Advantage Site who should be able to grant you access. The evaluation option is limited to 60 days, at which point you
+must remove the deployment or acquire entitlement.</p>
+<p>IBM and Microsoft also provide basic step-by-step instructions on getting started with WebSphere and RHEL without automated
+provisioning.</p>
+<p>IBM and Microsoft provide similar solutions targeting WebSphere ND on a cluster of VMs,
+WebSphere Liberty/Open Liberty on Azure Red Hat OpenShift (ARO) and WebSphere Liberty/Open Liberty on Azure Kubernetes Service (AKS).
+These options are linked in the <i>Learn more</i> section below.</p>
+<p><i>You can reach out to the engineering team developing these offers by clicking the CONTACT ME button on the
+<a href="https://ibm.biz/WebSphereOnAzureContactMe">marketplace
+WebSphere on Azure overview</a> page. Program managers, architects and engineers will get in touch and can assist you for free with
+your Azure migration.</i></p>
+<h2>Links</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/developer/java/ee/websphere-family">WebSphere on Azure</a></li>
+<li><a href="https://ibm.biz/WebSphereOnAzureContactMe">WebSphere on Azure Marketplace Overview</a></li>
+<li><a href="">WebSphere Cluster on Azure VMs</a></li>
+<li><a href="">WebSphere Liberty/Open Liberty on ARO</a></li>
+<li><a href="">WebSphere Liberty/Open Liberty on AKS</a></li>
 </ul>
-</li>
-<li>Network resources<ul>
-<li>A virtual network and a subnet. User can also select to deploy into a pre-existing virtual network.</li>
-<li>A network security group if user selects to create a new virtual network.</li>
-<li>A network interface.</li>
-<li>A public IP address assigned to the network interface if user selects to create a new virtual network.</li>
-</ul>
-</li>
-<li>Key software components<ul>
-<li>A WebSphere Application Server Base 9.0.5.x installed on the VM with the followings configuration:<ul>
-<li>The <strong>WAS_INSTALL_ROOT</strong> is <strong>/datadrive/IBM/WebSphere/Base/V9</strong>.</li>
-<li>Options to deploy with existing WebSphere entitlement or with evaluation licens.</li>
-<li>WebSphere administrator credential.</li>
-<li>Database data source connection if user selects to connect a database.</li>
-</ul>
-</li>
-<li>IBM Java JDK 8. The <strong>JAVA_HOME</strong> is <strong>${WAS_INSTALL_ROOT}/java/8.0</strong>.</li>
-</ul>
-</li>
-</ul>
-<p>This offer automatically provisions several Azure resources to quickly move to a traditional WebSphere Application Server (Base) single server instance on Azure VMs. The automatically provisioned resources include virtual network, storage, network security group, Java, Linux, and WebSphere. With minimal effort you can provision a fully functional, WebSphere Application Server instance, including the Administrative Console. This offer automatically provisions the latest Red Hat Enterprise Linux, IBM Java SDK 8, and WebSphere 9.0.5 to ensure your VM has the latest fixes. </p>
-<p>The server is started by default, which allows you to begin managing it right away using the Admin Console. For complete instructions, please follow the official <a href="https://www.ibm.com/docs/was/9.0.5">WebSphere documentation</a>.</p>
-<p>This offer includes both Evaluation and Bring-Your-Own-License (BYOL) options for WebSphere. When using BYOL you will be required to enter your registered IBM ID prior to successfully deploying this offer and your IBM ID must have active WebSphere entitlements associated with it. If you find that provisioning fails due to lack of entitlements, please contact the primary or secondary contacts for your IBM Passport Advantage Site who should be able to grant you access. The Evaluation option is limited to 60 days, at which point you must remove the deployment or acquire entitlement. Regardless of the chosen WebSphere option, this offer also assumes you are properly licensed to run offers in Microsoft Azure.<br></p>
-<h1>WebSphere Solutions Overview</h1><p>The IBM WebSphere product portfolio is a set of industry-leading runtimes powering some of the most mission critical enterprise applications across geographies and environments. The WebSphere portfolio includes WebSphere Application Server (traditional), WebSphere Liberty, and Open Liberty.</p>
-<p>WebSphere products are key components in enabling enterprise Java workloads on Azure. IBM and Microsoft are collaborating on a set of jointly developed and supported solutions for the product family. Offers include Open Liberty/WebSphere Liberty on Azure Red Hat OpenShift (ARO), Open Liberty/WebSphere Liberty on the Azure Kubernetes Service (AKS), and WebSphere Application Server (traditional) Single Instance or Clustered on VMs.</p>
-<p>If you want to provide feedback or work closely on your migration scenarios with the engineering team developing these offers, select the CONTACT ME button on the marketplace offer <a href="https://aka.ms/websphere-on-azure-contactme">overview page</a>. The opportunity to collaborate on a migration scenario is free while the offers are under active development.</p>
-<p>The currently available offers are listed in the Learn More section at the bottom of the <a href="https://ibm.biz/WebSphereOnAzureContactMe">overview page</a>.</p>
