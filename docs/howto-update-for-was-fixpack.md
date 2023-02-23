@@ -4,8 +4,8 @@ Please follow sections below in order to update the solution for next tWAS base 
 
 ## Updating the image
 
-1. Which file to update for WAS version?
-   * For `twas-base` image, update the following properties in file [`virtualimage.properties`](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/twas-base/src/main/scripts/virtualimage.properties#L14-L15), e.g.:
+1. Which file to update for WAS and BigFix client versions?
+   * For WAS version in `twas-base` image, update the following properties in file [`virtualimage.properties`](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/twas-base/src/main/scripts/virtualimage.properties#L14-L15), e.g.:
 
      ```bash
      WAS_BASE_TRADITIONAL=com.ibm.websphere.BASE.v90
@@ -14,14 +14,7 @@ Please follow sections below in order to update the solution for next tWAS base 
 
      Note: only the major version should be specified, the minor version should not be hard-coded as the Installation Manager will intelligently install the latest available minor version.
 
-   * For `twas-base-cis` image, update the following properties in file [`virtualimage.properties`](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/twas-base-cis/src/main/scripts/virtualimage.properties#L14-L18), e.g.:
-
-     ```bash
-     WAS_BASE_TRADITIONAL=com.ibm.websphere.BASE.v90
-     IBM_JAVA_SDK=com.ibm.java.jdk.v8
-     ```
-
-     Note: only the major version should be specified, the minor version should not be hard-coded as the Installation Manager will intelligently install the latest available minor version.
+   * For BigFix client version in `twas-base` image, update the following properties in file [`virtualimage.properties`](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/twas-base/src/main/scripts/virtualimage.properties#L32-L34), e.g.:
 
      ```bash
      BES_AGENT_RPM=BESAgent-10.0.8.37-rhe6.x86_64.rpm
@@ -37,30 +30,28 @@ Please follow sections below in order to update the solution for next tWAS base 
 
 1. How to run CI/CD?
    * Go to [Actions](https://github.com/WASdev/azure.websphere-traditional.image/actions) > Click `twas-base CICD` > Click to expand `Run workflow` > Click `Run workflow` > Refresh the page
-   * Go to [Actions](https://github.com/WASdev/azure.websphere-traditional.image/actions) > Click `twas-base-cis CICD` > Click to expand `Run workflow` > Click `Run workflow` > Refresh the page
 
 1. How to test the image, what testcases to run?
    * The CI/CD contains tests to verify the entitlement check and tWAS installation, so basically it's good to go without manual tests.
    * However, if CI/CD failed, please look at error messages from the CI/CD logs, and [access the source VM](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/docs/howto-access-source-vm.md) for troubleshooting if necessary.
 
-1. How to publish the image **as a hidden image** in marketplace and who can do it?
-   1. For `twas-base` image: Wait until the CI/CD workflow for `twas-base CICD` successfully completes > Click to open details of the workflow run > Scroll to the bottom of the page > Click `sasurl` to download the zip file `sasurl.zip` > Unzip and open file `sas-url.txt` > Find values for `osDiskSasUrl` and `dataDiskSasUrl`;
-   1. For `twas-base-cis` image: Wait until the CI/CD workflow for `twas-base-cis CICD` successfully completes > Click to open details of the workflow run > Scroll to the bottom of the page > Click `sasurl-twasbase-cis` to download the zip file `sasurl-twasbase-cis.zip` > Unzip and open file `sas-url-twasbase-cis.txt` > Find values for `osDiskSasUrl` and `dataDiskSasUrl`;
+1. How to publish the image in marketplace and who can do it?
+   1. Wait until the CI/CD workflow for `twas-base CICD` successfully completes > Click to open details of the workflow run > Scroll to the bottom of the page > Click `sasurl-twasbase` to download the zip file `sasurl-twasbase.zip` > Unzip and open file `sas-url-twasbase.txt` > Find values for `osDiskSasUrl` and `dataDiskSasUrl`;
    1. Sign into [Microsoft Partner Center](https://partner.microsoft.com/dashboard/commercial-marketplace/overview):
       * Select the Directory `IBM-Alliance-Microsoft Partner Network-Global-Tenant`
       * Expand `Build solutions` and choose `Publish your solution`.  
-      * Click to open the offer for `2022-01-06-twas-single-server-base-image` (`<date>-twas-single-server-cis-base-image` for twas-base-cis image)
+      * Click to open the offer for `2022-01-06-twas-single-server-base-image`
       * Click `Plan overview` the click to open the plan 
       * **IMPORTANT** Click `Pricing and availability` to verify the plan is hidden from the marketplace
          * Ensure the `Hide plan` checkbox is checked
       * Click `Technical configuration` 
       * Click `+` under "VM Images" to add VM image > Specify a new value for `Version number`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
-      * Under `SAS URI` > `Add OS Disk`. Copy and paste value of `osDiskSasUrl` for `twas-base` or `twas-base-cis` (from the earlier steps) to the textbox `OS VHD Link` 
-      * Click `+ Add data disk` > Select `Data disk 0` > Copy and paste value of `dataDiskSasUrl` for `twas-base` or `twas-base-cis` (from the earlier steps) to the textbox `Data disk VHD link`
+      * Under `SAS URI` > `Add OS Disk`. Copy and paste value of `osDiskSasUrl` for `twas-base` (from the earlier steps) to the textbox `OS VHD Link` 
+      * Click `+ Add data disk` > Select `Data disk 0` > Copy and paste value of `dataDiskSasUrl` for `twas-base` (from the earlier steps) to the textbox `Data disk VHD link`
       * Scroll to the bottom of the page and click `Save VM image`
       * Click `Save draft`
       * Click `Review and publish`
-      * In the "Notes for certification" section enter the twas-base CICD URL or twas-base-cis CICD URL
+      * In the "Notes for certification" section enter the twas-base CICD URL
       * Click `Publish`;
       * Wait for few hours to a day, keep refreshing the page until "Go Live" button appears
       * Click on "Go Live" and wait again (for few hours) for the image to be published.
