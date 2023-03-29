@@ -6,7 +6,7 @@
     "imagePublisherDescription": "This is the 'Partner ID' in Partner Center",
     "imagePublisher": "ibm-usa-ny-armonk-hq-6275750-ibmcloud-aiops",
     "twasImageOfferDescription": "This is the twas 'Offer ID' of the 'Azure Virtual Machine' offer type",
-    "twasImageOffer": "2023-03-27-twas-single-server-base-image-preview",
+    "twasImageOffer": "2023-03-27-twas-single-server-base-image",
     "twasImageSkuDescription": "This is the twas 'Plan ID' of the plan within the 'Azure Virtual Machine' offer",
     "twasImageSku": "2023-03-27-twas-single-server-base-image",
     "twasImageVersionDescription": "This is the twas 'Disk version' of the VM image of the plan within the 'Azure Virtual Machine' offer",
