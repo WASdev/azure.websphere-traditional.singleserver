@@ -40,10 +40,10 @@ Please follow sections below in order to update the solution for next tWAS base 
    1. Sign into [Microsoft Partner Center](https://partner.microsoft.com/dashboard/commercial-marketplace/overview):
       * Select the Directory `IBM-Alliance-Microsoft Partner Network-Global-Tenant`
       * Expand `Build solutions` and choose `Publish your solution`.  
-      * Click to open the offer for `2022-01-06-twas-single-server-base-image`
-      * Click `Plan overview` the click to open the plan 
-      * **IMPORTANT** Click `Pricing and availability` to verify the plan is hidden from the marketplace
-         * Ensure the `Hide plan` checkbox is checked
+      * Click to open the offer for `2023-03-27-twas-single-server-base-image`
+      * Click `Plan overview` then click to open the plan 
+      * **IMPORTANT** Click `Pricing and availability` to verify the plan is NOT hidden from the marketplace
+         * Ensure the `Hide plan` checkbox is NOT checked
       * Click `Technical configuration` 
       * Click `+` under "VM Images" to add VM image > Specify a new value for `Version number`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
       * Under `SAS URI` > `Add OS Disk`. Copy and paste value of `osDiskSasUrl` for `twas-base` (from the earlier steps) to the textbox `OS VHD Link` 
