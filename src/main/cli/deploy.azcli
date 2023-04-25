@@ -26,6 +26,7 @@ usage() { echo "Usage: $0 -n <deploymentName> -g <resourceGroupName> -l <resourc
 declare deploymentName=""
 declare resourceGroupName=""
 declare resourceGroupLocation=""
+declare imageResourceId=""
 
 # Initialize parameters specified from command line
 while getopts ":n:i:g:l:" arg; do
@@ -38,6 +39,9 @@ while getopts ":n:i:g:l:" arg; do
 			;;
 		l)
 			resourceGroupLocation=${OPTARG}
+			;;
+		i)
+			imageResourceId=${OPTARG}
 			;;
 		esac
 done
@@ -76,6 +80,14 @@ templateFilePath="../arm/mainTemplate.json"
 if [ ! -f "$templateFilePath" ]; then
 	echo "$templateFilePath not found"
 	exit 1
+fi
+
+# use imageResourceId in template if provided
+if [ -n "$imageResourceId" ]; then
+	templateJson=$(cat $templateFilePath | jq 'del(.resources[] | select(.type == "Microsoft.Compute/virtualMachines") | select(.name | contains("name_virtualMachine")) | .plan)')
+	templateJson=$(echo $templateJson | jq 'del(.resources[] | select(.type == "Microsoft.Compute/virtualMachines") | select(.name | contains("name_virtualMachine")) | .properties.storageProfile.imageReference)')
+	templateJson=$(echo $templateJson | jq --arg imageResourceId "$imageResourceId" '(.resources[] | select(.type == "Microsoft.Compute/virtualMachines") | select(.name | contains("name_virtualMachine"))).properties.storageProfile.imageReference.id |= $imageResourceId')
+	echo $templateJson | jq . > $templateFilePath
 fi
 
 #parameter file path
