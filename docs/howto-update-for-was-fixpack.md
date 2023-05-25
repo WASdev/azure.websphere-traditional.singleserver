@@ -29,14 +29,23 @@ Please follow sections below in order to update the solution for next tWAS base 
    * Images may also need to updated to fix a critical WebSphere or OS fixes.
 
 1. How to run CI/CD?
-   * Go to [Actions](https://github.com/WASdev/azure.websphere-traditional.image/actions) > Click `twas-base CICD` > Click to expand `Run workflow` > Click `Run workflow` > Refresh the page
+   * Before running the CI/CD, make sure the VM image in partner center has already been live. If the VM image is not published or published but in preview stage, the CI/CD workflow run will fail.
+   * Go to [Actions](https://github.com/WASdev/azure.websphere-traditional.image/actions) > Click `twas-base CICD` > Click to expand `Run workflow` > Fill in image version number for **Must provide image version number** > Click `Run workflow` > Refresh the page.
+     * Note: The **image version number** you provide will be used as the value of **Image version** for the new `twas-base` VM image that will be added to partner center by the CICD pipeline.
+   * If Workflow does not kick off from the UI, try the command line after replacing `<twas-base-image-version-number>` with real value:
+
+   ```
+   PERSONAL_ACCESS_TOKEN=<access-token>
+   REPO_NAME=WASdev/azure.websphere-traditional.image
+   curl --verbose -X POST -u "WASdev:${PERSONAL_ACCESS_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${REPO_NAME}/actions/workflows/twas-baseBuild.yml/dispatches --data '{"ref": "main", "inputs": {"imageVersionNumber": "<twas-base-image-version-number>"}}'
+   ```
 
 1. How to test the image, what testcases to run?
-   * The CI/CD contains tests to verify the entitlement check and tWAS installation, so basically it's good to go without manual tests.
+   * The CI/CD contains tests to verify the entitlement check, tWAS installation, configuring tWAS single server, installing a sample application and accessing admin console and application. So basically it's good to go without manual tests.
    * However, if CI/CD failed, please look at error messages from the CI/CD logs, and [access the source VM](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/docs/howto-access-source-vm.md) for troubleshooting if necessary.
 
 1. How to publish the image in marketplace and who can do it?
-   1. Wait until the CI/CD workflow for `twas-base CICD` successfully completes > Click to open details of the workflow run > Scroll to the bottom of the page > Click `sasurl-twasbase` to download the zip file `sasurl-twasbase.zip` > Unzip and open file `sas-url-twasbase.txt` > Find values for `osDiskSasUrl` and `dataDiskSasUrl`;
+   1. Wait until the CI/CD workflow for `twas-base CICD` successfully completes. The workflow will update the offer by adding a new `twas-base` VM image and saving it as a draft in partner center.
    1. Sign into [Microsoft Partner Center](https://partner.microsoft.com/dashboard/commercial-marketplace/overview):
       * Select the Directory `IBM-Alliance-Microsoft Partner Network-Global-Tenant`
       * Expand `Build solutions` and choose `Publish your solution`.  
@@ -44,12 +53,7 @@ Please follow sections below in order to update the solution for next tWAS base 
       * Click `Plan overview` then click to open the plan 
       * **IMPORTANT** Click `Pricing and availability` to verify the plan is NOT hidden from the marketplace
          * Ensure the `Hide plan` checkbox is NOT checked
-      * Click `Technical configuration` 
-      * Click `+` under "VM Images" to add VM image > Specify a new value for `Version number`, following the convention \<major version\>.YYYYMMDD, e.g. 9.0.20210929 and write it down (We deliberately do not specify the minor verson because the pipeline gets the latest at the time it is run). 
-      * Under `SAS URI` > `Add OS Disk`. Copy and paste value of `osDiskSasUrl` for `twas-base` (from the earlier steps) to the textbox `OS VHD Link` 
-      * Click `+ Add data disk` > Select `Data disk 0` > Copy and paste value of `dataDiskSasUrl` for `twas-base` (from the earlier steps) to the textbox `Data disk VHD link`
-      * Scroll to the bottom of the page and click `Save VM image`
-      * Click `Save draft`
+      * Click `Technical configuration`. You should see a new draft of VM image exists.
       * Click `Review and publish`
       * In the "Notes for certification" section enter the twas-base CICD URL
       * Click `Publish`;
