@@ -49,11 +49,6 @@ MSTEAMS_WEBHOOK=
 set -Eeuo pipefail
 trap cleanup SIGINT SIGTERM ERR EXIT
 
-isOsMac="false"
-if [[ $OSTYPE == 'darwin'* ]]; then
-    isOsMac="true"
-fi
-
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
   # script cleanup here
@@ -171,11 +166,12 @@ USE_GITHUB_CLI=false
 # Create service principal with Contributor role in the subscription
 msg "${GREEN}(3/4) Create service principal ${SERVICE_PRINCIPAL_NAME}"
 SUBSCRIPTION_ID=$(az account show --query id --output tsv --only-show-errors)
-if [[ "${isOsMac}" == "true" ]]; then
-    SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --name ${SERVICE_PRINCIPAL_NAME} --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}" --sdk-auth --only-show-errors | base64)
-else
-    SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --name ${SERVICE_PRINCIPAL_NAME} --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}" --sdk-auth --only-show-errors | base64 -w0)
+# Explicitely disable line wrapping for non MacOS 
+w0=-w0
+if [[ $OSTYPE == 'darwin'* ]]; then
+  w0=
 fi
+SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --name ${SERVICE_PRINCIPAL_NAME} --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}" --sdk-auth --only-show-errors | base64 $w0)
 msg "${YELLOW}\"DISAMBIG_PREFIX\""
 msg "${GREEN}${DISAMBIG_PREFIX}"
 
