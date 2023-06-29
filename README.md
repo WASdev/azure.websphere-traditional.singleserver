@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Copyright (c) IBM Corporation. -->
+
 # Related Repositories
 
 * [Base image deployed by this Azure application](https://github.com/WASdev/azure.websphere-traditional.image/tree/main/twas-base)

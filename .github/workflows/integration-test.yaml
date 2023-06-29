@@ -1,3 +1,5 @@
+#      Copyright (c) Microsoft Corporation.
+#      Copyright (c) IBM Corporation.
 name: integration-test
 on:
   workflow_dispatch:

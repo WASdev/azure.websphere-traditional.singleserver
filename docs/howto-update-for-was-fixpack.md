@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Copyright (c) IBM Corporation. -->
+
 # How to update the tWAS base single server on Azure VM solution for next tWAS fixpack
 
 Please follow sections below in order to update the solution for next tWAS base fixpack.

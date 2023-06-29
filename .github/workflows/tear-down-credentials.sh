@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#      Copyright (c) Microsoft Corporation.
+#      Copyright (c) IBM Corporation.
 ################################################
 # This script is invoked by a human who:
 # - has invoked the setup-credentials.sh script
