@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Copyright (c) IBM Corporation. -->
+
 # Test cases for IBM WebSphere Application Server Single Instance offer
 
 To ensure no regressions introduced for any changes added to the IBM WebSphere Application Server Single Instance offer, the following test cases must be successfully executed with the expected results before clicking "Go live" for the offer. 
