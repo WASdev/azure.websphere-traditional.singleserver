@@ -77,6 +77,7 @@ Note: **Wait for images to be published before proceeding with this step.** The 
 1. How to update the version of the solution?
    * Increase the [version number](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/pom.xml#L22) which is specified in the `pom.xml`
    * Also update the [`twasImageVersion`](https://github.com/WASdev/azure.websphere-traditional.singleserver/blob/main/src/main/bicep/config.json#L13) in the `config.json` (obtained from publish step)
+   * If creating a new Plan, update the `pid` value as described in [How Azure customer usage attribution works in the IBM Partner Center offers](https://github.com/WASdev/azure.websphere-traditional.image/blob/main/docs/howto-update-pids.md).
    * Get the PR merged
 
 1. How to run CI/CD?
