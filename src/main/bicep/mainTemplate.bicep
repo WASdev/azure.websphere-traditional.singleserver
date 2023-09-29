@@ -176,7 +176,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2023-06-0
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks3-06-01' = if (const_newVNet) {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-06-01' = if (const_newVNet) {
   name: vnetForSingleServer.name
   location: location
   properties: {
@@ -197,17 +197,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks3-06-01' = if (const_n
   }
 }
 
-resource existingVNet 'Microsoft.Network/virtualNetworks3-06-01' existing = if (!const_newVNet) {
+resource existingVNet 'Microsoft.Network/virtualNetworks@2023-06-01' existing = if (!const_newVNet) {
   name: vnetForSingleServer.name
   scope: resourceGroup(vnetRGNameForSingleServer)
 }
 
-resource existingSubnet 'Microsoft.Network/virtualNetworks/subnets3-06-01' existing = if (!const_newVNet) {
+resource existingSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-06-01' existing = if (!const_newVNet) {
   parent: existingVNet
   name: vnetForSingleServer.subnets.subnet1.name
 }
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses3-06-01' = if (const_newVNet) {
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-06-01' = if (const_newVNet) {
   name: name_publicIPAddress
   location: location
   properties: {
@@ -218,7 +218,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses3-06-01' = if (cons
   }
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces3-06-01' = if (const_newVNet) {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2023-06-01' = if (const_newVNet) {
   name: name_networkInterface
   location: location
   properties: {
@@ -245,7 +245,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces3-06-01' = if (con
   ]
 }
 
-resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces3-06-01' = if (!const_newVNet) {
+resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@2023-06-01' = if (!const_newVNet) {
   name: name_networkInterfaceNoPubIp
   location: location
   properties: {
@@ -263,7 +263,7 @@ resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces3-06-01' = 
   }
 }
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines3-07-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-07-01' = {
   name: name_virtualMachine
   location: location
   properties: {
@@ -323,7 +323,7 @@ module dbConnectionStartPid './modules/_pids/_empty.bicep' = if (enableDB) {
   ]
 }
 
-resource vmExtension 'Microsoft.Compute/virtualMachines/extensions3-07-01' = {
+resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = {
   parent: virtualMachine
   name: 'install'
   location: location
