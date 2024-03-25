@@ -15,8 +15,8 @@ on:
   # curl --verbose -X POST https://api.github.com/repos/${REPO_NAME}/dispatches -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${PERSONAL_ACCESS_TOKEN}" --data '{"event_type": "package"}'
 env:
   repoName: "azure.websphere-traditional.singleserver"
-  offerId: "2022-01-07-twas-base-single-server"
-  planId: "2022-01-07-twas-base-single-server"
+  offerId: "2023-07-31-twas-base-single-server"
+  planId: "2023-07-31-twas-base-single-server"
   clientId: ${{ secrets.CLIENT_ID }}
   secretValue: ${{ secrets.SECRET_VALUE }}
   tenantId: ${{ secrets.TENANT_ID }}
