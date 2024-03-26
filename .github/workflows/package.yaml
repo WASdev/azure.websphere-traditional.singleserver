@@ -1,6 +1,6 @@
 #      Copyright (c) Microsoft Corporation.
 #      Copyright (c) IBM Corporation.
-name: Package ARM
+name: Package ARM and Update Offer Artifact
 on:
   workflow_dispatch:
     inputs:
