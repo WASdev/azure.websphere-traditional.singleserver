@@ -218,7 +218,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersion
   }
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@{azure.apiVersionForNetworkInterfaces}' = if (const_newVNet) {
+resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = if (const_newVNet) {
   name: name_networkInterface
   location: location
   properties: {
@@ -263,7 +263,7 @@ resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@${azure.ap
   }
 }
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@{azure.apiVersionForVirtualMachines}' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionForVirtualMachines}' = {
   name: name_virtualMachine
   location: location
   properties: {
@@ -323,7 +323,7 @@ module dbConnectionStartPid './modules/_pids/_empty.bicep' = if (enableDB) {
   ]
 }
 
-resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@{azure.apiVersionForVirtualMachineExtensions}' = {
+resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@${azure.apiVersionForVirtualMachineExtensions}' = {
   parent: virtualMachine
   name: 'install'
   location: location
