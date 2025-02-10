@@ -297,11 +297,7 @@ jobs:
           
           # Verify if websphere-cafe is accessible
           websphereCafeUrl=https://${publicIp}:9443/websphere-cafe
-          curl $websphereCafeUrl -k
-          if [[ $? -ne 0 ]]; then
-            echo "Failed to access ${websphereCafeUrl}."
-            exit 1
-          fi
+          curl $websphereCafeUrl -k --fail
       - name: Generate artifact file name and path
         id: artifact_file
         run: |
