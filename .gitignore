@@ -13,3 +13,4 @@ target
 **/.classpath
 **/*.versionsBackup
 .DS_Store
+/.idea/*
