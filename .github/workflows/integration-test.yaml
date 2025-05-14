@@ -160,19 +160,81 @@ jobs:
           
           # Extract service principal details from the credentials
           SP_CLIENT_ID=$(echo '${{ env.azureCredentials }}' | jq -r '.clientId')
-          SP_OBJECT_ID=$(az ad sp show --id $SP_CLIENT_ID --query id -o tsv)
           
+          # The equivalent of Set-AzSqlServer -ResourceGroupName <ResourceGroupName> -ServerName <ServerName> -AssignIdentity
+          # is to use az sql server update with the --assign-identity parameter
           az sql server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --admin-user testuser --admin-password ${{ env.dbPassword }} \
+            --assign-identity \
             --external-admin-principal-type Application \
             --external-admin-name $SP_CLIENT_ID \
-            --external-admin-sid $SP_OBJECT_ID \
+            --external-admin-sid $(az ad sp show --id $SP_CLIENT_ID --query id -o tsv) \
             --location ${{ env.location }}
           host=$(az sql server show \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --query "fullyQualifiedDomainName" -o tsv)
           echo "sqlserverHost=${host}" >> $GITHUB_ENV
+          
+          # Assign Directory Readers permission to the SQL Server's system-assigned managed identity
+          # Get the SQL Server's system-assigned managed identity's principal ID
+          SQL_SERVER_IDENTITY_PRINCIPAL_ID=$(az sql server show \
+            --resource-group ${{ env.testResourceGroup }} \
+            --name ${{ env.dbInstanceName }} \
+            --query "identity.principalId" -o tsv)
+          
+          # Get the Server Identity's service principal display name (the logical server name)
+          SERVER_IDENTITY_NAME=$(az sql server show \
+            --resource-group ${{ env.testResourceGroup }} \
+            --name ${{ env.dbInstanceName }} \
+            --query "name" -o tsv)
+          
+          # Get the Directory Readers role ID
+          # First check if the role already exists
+          DIRECTORY_READERS_ROLE_ID=$(az rest \
+            --method GET \
+            --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
+            --query "value[?displayName=='Directory Readers'].id" -o tsv)
+          
+          # If the Directory Readers role isn't activated yet, activate it
+          if [ -z "$DIRECTORY_READERS_ROLE_ID" ]; then
+            echo "Directory Readers role not found. Activating it..."
+            # Get the role template ID for Directory Readers
+            DIRECTORY_ROLE_TEMPLATE_ID=$(az rest \
+              --method GET \
+              --uri "https://graph.microsoft.com/v1.0/directoryRoleTemplates" \
+              --query "value[?displayName=='Directory Readers'].id" -o tsv)
+            
+            # Activate the role
+            az rest --method POST \
+              --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
+              --headers "Content-Type=application/json" \
+              --body "{\"roleTemplateId\":\"$DIRECTORY_ROLE_TEMPLATE_ID\"}"
+            
+            # Get the activated role ID
+            DIRECTORY_READERS_ROLE_ID=$(az rest \
+              --method GET \
+              --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
+              --query "value[?displayName=='Directory Readers'].id" -o tsv)
+          fi
+          
+          # Check if the service principal is already a member of the Directory Readers role
+          EXISTING_ROLE_MEMBER=$(az rest --method GET \
+            --uri "https://graph.microsoft.com/v1.0/directoryRoles/$DIRECTORY_READERS_ROLE_ID/members" \
+            --query "value[?id=='$SQL_SERVER_IDENTITY_PRINCIPAL_ID'].id" -o tsv)
+          
+          if [ -z "$EXISTING_ROLE_MEMBER" ]; then
+            echo "Adding '$SERVER_IDENTITY_NAME' service principal to Directory Readers role..."
+            # Add the SQL Server managed identity to the Directory Readers role
+            az rest --method POST \
+              --uri "https://graph.microsoft.com/v1.0/directoryRoles/$DIRECTORY_READERS_ROLE_ID/members/\$ref" \
+              --headers "Content-Type=application/json" \
+              --body "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/$SQL_SERVER_IDENTITY_PRINCIPAL_ID\"}"
+            echo "'$SERVER_IDENTITY_NAME' service principal added to Directory Readers role."
+          else
+            echo "Service principal '$SERVER_IDENTITY_NAME' is already a member of Directory Readers role."
+          fi
+          
           # Allow Azure services to access
           az sql server firewall-rule create \
             --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} \
