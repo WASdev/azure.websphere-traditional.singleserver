@@ -157,12 +157,17 @@ jobs:
         if: ${{ inputs.databaseType == 'sqlserver' || github.event.client_payload.databaseType == 'sqlserver' }}
         run: |
           az group create -n ${{ env.testResourceGroup }} -l ${{ env.location }}
+          
+          # Extract service principal details from the credentials
+          SP_CLIENT_ID=$(echo '${{ env.azureCredentials }}' | jq -r '.clientId')
+          SP_OBJECT_ID=$(az ad sp show --id $SP_CLIENT_ID --query id -o tsv)
+          
           az sql server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --admin-user testuser --admin-password ${{ env.dbPassword }} \
             --external-admin-principal-type Application \
-            --external-admin-name $(az ad signed-in-user show --query userPrincipalName -o tsv) \
-            --external-admin-sid $(az ad signed-in-user show --query id --output tsv) \
+            --external-admin-name $SP_CLIENT_ID \
+            --external-admin-sid $SP_OBJECT_ID \
             --location ${{ env.location }}
           host=$(az sql server show \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
