@@ -61,6 +61,7 @@ env:
   vmAdminPassword: ${{ secrets.VM_ADMIN_PASSWORD }}
   dbInstanceName: db${{ github.run_id }}${{ github.run_number }}
   dbPassword: ${{ secrets.DATABASE_PASSWORD }}
+  uamiName: uami${{ github.run_id }}${{ github.run_number }}
   testResourceGroup: twasSingleTestRG-${{ github.repository_owner }}-${{ github.run_id }}-${{ github.run_number }}
   testDeploymentName: twasSingleTestDeployment-${{ github.run_id }}-${{ github.run_number }}
   location: ${{ github.event.inputs.location || 'eastus' }}
@@ -159,6 +160,9 @@ jobs:
           az sql server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --admin-user testuser --admin-password ${{ env.dbPassword }} \
+            --external-admin-principal-type Application \
+            --external-admin-name $(az ad signed-in-user show --query userPrincipalName -o tsv) \
+            --external-admin-sid $(az ad signed-in-user show --query id --output tsv) \
             --location ${{ env.location }}
           host=$(az sql server show \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
@@ -169,6 +173,19 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} \
             --name "AllowAllAzureIps" --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
           az sql db create --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} --name testdb
+
+          # Create a user-assigned managed identity
+          az identity create --name ${{ env.uamiName }} --resource-group ${{ env.testResourceGroup }}
+          # Get the client id of the managed identity
+          clientId=$(az identity show --name ${{ env.uamiName }} --resource-group ${{ env.testResourceGroup }} --query "clientId" -o tsv)
+          echo "MSIClientId=${clientId}" >> $GITHUB_ENV
+
+          # Create a SQL user for the managed identity for Microsoft Entra authentication
+          mvn clean package --file websphere-cafe/util/azure-sql-query/pom.xml
+          export SERVER_NAME=${host}
+          export DATABASE_NAME=testdb
+          export SQL_QUERY="CREATE USER \"${{ env.uamiName }}\" FROM EXTERNAL PROVIDER;GRANT CONTROL ON DATABASE::\"${DATABASE_NAME}\" TO \"${{ env.uamiName }}\";"
+          java -jar websphere-cafe/util/azure-sql-query/target/azure-sql-query-1.0-SNAPSHOT-jar-with-dependencies.jar
       - name: Deploy an instance of Azure Database for PostgreSQL Flexible Server
         if: ${{ inputs.databaseType == 'postgres' || github.event.client_payload.databaseType == 'postgres' }}
         run: |
