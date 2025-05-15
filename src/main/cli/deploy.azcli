@@ -129,6 +129,8 @@ useTrial=$( echo $parametersJson | jq '.useTrial.value' | sed 's/"//g' )
 parametersJson=$( echo $parametersJson | jq --argjson useTrial "$useTrial" '.useTrial.value = $useTrial' )
 enableDB=$( echo $parametersJson | jq '.enableDB.value' | sed 's/"//g' )
 parametersJson=$( echo $parametersJson | jq --argjson enableDB "$enableDB" '.enableDB.value = $enableDB' )
+enablePswlessConnection=$( echo $parametersJson | jq '.enablePswlessConnection.value' | sed 's/"//g' )
+parametersJson=$( echo $parametersJson | jq --argjson enablePswlessConnection "$enablePswlessConnection" '.enablePswlessConnection.value = $enablePswlessConnection' )
 parametersJson=$( echo "$parametersJson" | jq -c '.' )
 
 #Start deployment

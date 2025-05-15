@@ -52,6 +52,9 @@
         },
         "dbPassword": {
             "value": "${dbPassword}"
+        },
+        "enablePswlessConnection": {
+            "value": "${enablePswlessConnectionParam}"
         }
     }
 }
