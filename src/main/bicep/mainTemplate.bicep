@@ -270,12 +270,7 @@ resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@${azure.ap
 resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionForVirtualMachines}' = {
   name: name_virtualMachine
   location: location
-  identity: enablePswlessConnection ? {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${items(dbIdentity.userAssignedIdentities)[0].key}': {}
-    }
-  } : null
+  identity: enablePswlessConnection ? dbIdentity : null
   properties: {
     hardwareProfile: {
       vmSize: vmSize
@@ -377,4 +372,3 @@ module singleServerEndPid './modules/_pids/_empty.bicep' = {
 output adminSecuredConsole string = uri(format('https://{0}:9043/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'ibm/console/logon.jsp')
 output snoopServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'snoop')
 output hitCountServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'hitcount')
-output dbIdentity string = enablePswlessConnection ? items(dbIdentity.userAssignedIdentities)[0].key : ''
