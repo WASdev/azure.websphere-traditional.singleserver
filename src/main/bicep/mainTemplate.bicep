@@ -113,7 +113,8 @@ param dbIdentity object = {}
 
 param guidValue string = newGuid()
 
-var const_arguments = format(' {0} {1} {2} {3} {4} {5} {6} {7}', wasUsername, wasPassword, enableDB, databaseType, base64(jdbcDataSourceJNDIName), base64(dsConnectionURL), base64(dbUser), base64(dbPassword))
+var uamiClientId = enablePswlessConnection ? reference(items(dbIdentity.userAssignedIdentities)[0].key, '${azure.apiVersionForIdentity}', 'full').properties.clientId : 'NA'
+var const_arguments = format(' {0} {1} {2} {3} {4} {5} {6} {7} {8} {9}', wasUsername, wasPassword, enableDB, databaseType, base64(jdbcDataSourceJNDIName), base64(dsConnectionURL), base64(dbUser), base64(dbPassword), enablePswlessConnection, uamiClientId)
 var const_dnsLabelPrefix = format('{0}{1}', dnsLabelPrefix, take(replace(guidValue, '-', ''), 6))
 var const_linuxConfiguration = {
   disablePasswordAuthentication: true
