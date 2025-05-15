@@ -161,8 +161,7 @@ jobs:
           # Extract service principal details from the credentials
           SP_CLIENT_ID=$(echo '${{ env.azureCredentials }}' | jq -r '.clientId')
           
-          # The equivalent of Set-AzSqlServer -ResourceGroupName <ResourceGroupName> -ServerName <ServerName> -AssignIdentity
-          # is to use az sql server update with the --assign-identity parameter
+          # Create an Azure SQL server with system-assigned managed identity and assign the service principal logged into the Azure CLI as an Entra admin
           az sql server create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --admin-user testuser --admin-password ${{ env.dbPassword }} \
@@ -175,7 +174,13 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --query "fullyQualifiedDomainName" -o tsv)
           echo "sqlserverHost=${host}" >> $GITHUB_ENV
-          
+
+          # Allow Azure services to access
+          az sql server firewall-rule create \
+            --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} \
+            --name "AllowAllAzureIps" --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+          az sql db create --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} --name testdb
+
           # Assign Directory Readers permission to the SQL Server's system-assigned managed identity
           # Get the SQL Server's system-assigned managed identity's principal ID
           SQL_SERVER_IDENTITY_PRINCIPAL_ID=$(az sql server show \
@@ -183,75 +188,22 @@ jobs:
             --name ${{ env.dbInstanceName }} \
             --query "identity.principalId" -o tsv)
           
-          # Get the Server Identity's service principal display name (the logical server name)
-          SERVER_IDENTITY_NAME=$(az sql server show \
-            --resource-group ${{ env.testResourceGroup }} \
-            --name ${{ env.dbInstanceName }} \
-            --query "name" -o tsv)
-          
-          # Get the Directory Readers role ID
-          # First check if the role already exists
-          DIRECTORY_READERS_ROLE_ID=$(az rest \
-            --method GET \
-            --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
-            --query "value[?displayName=='Directory Readers'].id" -o tsv)
-          
-          # If the Directory Readers role isn't activated yet, activate it
-          if [ -z "$DIRECTORY_READERS_ROLE_ID" ]; then
-            echo "Directory Readers role not found. Activating it..."
-            # Get the role template ID for Directory Readers
-            DIRECTORY_ROLE_TEMPLATE_ID=$(az rest \
-              --method GET \
-              --uri "https://graph.microsoft.com/v1.0/directoryRoleTemplates" \
-              --query "value[?displayName=='Directory Readers'].id" -o tsv)
-            
-            # Activate the role
-            az rest --method POST \
-              --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
-              --headers "Content-Type=application/json" \
-              --body "{\"roleTemplateId\":\"$DIRECTORY_ROLE_TEMPLATE_ID\"}"
-            
-            # Get the activated role ID
-            DIRECTORY_READERS_ROLE_ID=$(az rest \
-              --method GET \
-              --uri "https://graph.microsoft.com/v1.0/directoryRoles" \
-              --query "value[?displayName=='Directory Readers'].id" -o tsv)
-          fi
-          
-          # Check if the service principal is already a member of the Directory Readers role
-          EXISTING_ROLE_MEMBER=$(az rest --method GET \
-            --uri "https://graph.microsoft.com/v1.0/directoryRoles/$DIRECTORY_READERS_ROLE_ID/members" \
-            --query "value[?id=='$SQL_SERVER_IDENTITY_PRINCIPAL_ID'].id" -o tsv)
-          
-          if [ -z "$EXISTING_ROLE_MEMBER" ]; then
-            echo "Adding '$SERVER_IDENTITY_NAME' service principal to Directory Readers role..."
-            # Add the SQL Server managed identity to the Directory Readers role
-            az rest --method POST \
-              --uri "https://graph.microsoft.com/v1.0/directoryRoles/$DIRECTORY_READERS_ROLE_ID/members/\$ref" \
-              --headers "Content-Type=application/json" \
-              --body "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/$SQL_SERVER_IDENTITY_PRINCIPAL_ID\"}"
-            echo "'$SERVER_IDENTITY_NAME' service principal added to Directory Readers role."
-          else
-            echo "Service principal '$SERVER_IDENTITY_NAME' is already a member of Directory Readers role."
-          fi
-          
-          # Allow Azure services to access
-          az sql server firewall-rule create \
-            --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} \
-            --name "AllowAllAzureIps" --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
-          az sql db create --resource-group ${{ env.testResourceGroup }} --server ${{ env.dbInstanceName }} --name testdb
+          # Add the SQL Server managed identity to the Directory Readers role
+          # https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#all-roles
+          DIRECTORY_READERS_ROLE_TEMPLATE_ID=88d8e3e3-8f55-4a1e-953a-9b9898b8876b
+          az rest --method POST \
+            --uri "https://graph.microsoft.com/v1.0/directoryRoles/roleTemplateId=$DIRECTORY_READERS_ROLE_TEMPLATE_ID/members/\$ref" \
+            --headers "Content-Type=application/json" \
+            --body "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/$SQL_SERVER_IDENTITY_PRINCIPAL_ID\"}"
 
           # Create a user-assigned managed identity
           az identity create --name ${{ env.uamiName }} --resource-group ${{ env.testResourceGroup }}
-          # Get the client id of the managed identity
-          clientId=$(az identity show --name ${{ env.uamiName }} --resource-group ${{ env.testResourceGroup }} --query "clientId" -o tsv)
-          echo "MSIClientId=${clientId}" >> $GITHUB_ENV
 
           # Create a SQL user for the managed identity for Microsoft Entra authentication
-          mvn clean package --file websphere-cafe/util/azure-sql-query/pom.xml
           export SERVER_NAME=${host}
           export DATABASE_NAME=testdb
           export SQL_QUERY="CREATE USER \"${{ env.uamiName }}\" FROM EXTERNAL PROVIDER;GRANT CONTROL ON DATABASE::\"${DATABASE_NAME}\" TO \"${{ env.uamiName }}\";"
+          mvn clean package --file websphere-cafe/util/azure-sql-query/pom.xml
           java -jar websphere-cafe/util/azure-sql-query/target/azure-sql-query-1.0-SNAPSHOT-jar-with-dependencies.jar
       - name: Deploy an instance of Azure Database for PostgreSQL Flexible Server
         if: ${{ inputs.databaseType == 'postgres' || github.event.client_payload.databaseType == 'postgres' }}
