@@ -55,7 +55,7 @@ shift $((OPTIND-1))
 echo uamiId: $uamiId
 echo imageResourceId: $imageResourceId
 
-#Prompt for parameters is some required parameters are missing
+#Prompt for parameters if some required parameters are missing
 if [[ -z "$deploymentName" ]]; then
     echo "Enter a name for this deployment:"
     read deploymentName
