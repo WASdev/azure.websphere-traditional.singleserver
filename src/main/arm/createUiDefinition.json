@@ -464,7 +464,7 @@
                                         },
                                         {
                                             "isValid": "[if(bool(steps('section_database').databaseConnectionInfo.enablePswlessConnection), and(not(contains(steps('section_database').databaseConnectionInfo.sqlserverDsConnectionURL, 'authentication=ActiveDirectoryMSI')),not(contains(steps('section_database').databaseConnectionInfo.sqlserverDsConnectionURL, 'msiClientId'))), 'true')]",
-                                            "message": "The offer will append authentication with ActiveDirectoryMSI, and append msiClientId with your managed identity client ID automatically, please do not specify them in your connection string."
+                                            "message": "The offer will append values to the connection string for the passwordless connection. Do not specify values for ActiveDirectoryMSI and msiClientId in your connection string."
                                         },
                                         {
                                             "isValid": "[if(bool(steps('section_database').databaseConnectionInfo.enablePswlessConnection), greater(length(steps('section_database').databaseConnectionInfo.dbIdentity.userAssignedIdentities),0), bool('true'))]",
@@ -528,7 +528,7 @@
                                 "type": "Microsoft.ManagedIdentity.IdentitySelector",
                                 "label": "Connect database with Managed Identity",
                                 "toolTip": {
-                                    "userAssignedIdentity": "Select a user assigned identity that has access to your database. For how to create a database user for your managed identity, see https://aka.ms/javaee-db-identity."
+                                    "userAssignedIdentity": "Select a user assigned managed identity that has access to your database. For instructions, see https://aka.ms/jakartaee-db-identity."
                                 },
                                 "defaultValue": {
                                     "systemAssignedIdentity": "Off"
