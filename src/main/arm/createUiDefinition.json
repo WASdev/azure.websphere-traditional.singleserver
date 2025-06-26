@@ -402,7 +402,7 @@
                                             "value": "oracle"
                                         },
                                         {
-                                            "label": "Microsoft SQL Server (Supports passwordless connection)",
+                                            "label": "Azure SQL (Supports passwordless connection)",
                                             "value": "sqlserver"
                                         }
                                     ],
@@ -528,7 +528,7 @@
                                 "type": "Microsoft.ManagedIdentity.IdentitySelector",
                                 "label": "Connect database with Managed Identity",
                                 "toolTip": {
-                                    "userAssignedIdentity": "Select a user assigned managed identity that has access to your database. For instructions, see https://aka.ms/jakartaee-db-identity."
+                                    "userAssignedIdentity": "Select a user assigned managed identity that has access to your database. For instructions, see https://aka.ms/jakartaee-db-identity-websphere."
                                 },
                                 "defaultValue": {
                                     "systemAssignedIdentity": "Off"
