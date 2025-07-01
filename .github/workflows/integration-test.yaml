@@ -70,6 +70,7 @@ env:
 jobs:
   integration-test:
     runs-on: ubuntu-latest
+    env: ${{ fromJson(inputs.configurations_for_ci) }}
     steps:
       - name: Get versions of external dependencies
         run: |
@@ -261,8 +262,23 @@ jobs:
           fi
           echo "enableDB=${enableDB}" >> $GITHUB_ENV
 
+          if ${{ env.entitled == 'true' }}; then
+            echo "Deploy with existing WebSphere entitlement license"
+            useTrial=false
+            ibmUserId=${{ secrets.IBM_USER_ID }}
+            ibmUserPwd=${{ secrets.IBM_USER_PWD }}
+          else
+            echo "Trial user, use evaluation license"
+            useTrial=true
+            ibmUserId=""
+            ibmUserPwd=""
+          fi
+
           cd ${{ env.repoName }}
-          mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME -DuseTrial=true \
+          mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME \
+            -DuseTrial=${useTrial} \
+            -DibmUserId=${ibmUserId} \
+            -DibmUserPwd=${ibmUserPwd} \
             -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
             -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
             -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
