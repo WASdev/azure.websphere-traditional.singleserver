@@ -11,6 +11,12 @@
               "entitled": "true"
             }
           }
+        },
+        {
+          "scenario": "Deploy with passwordless SQL Server",
+          "inputs": {
+            "databaseType": "sqlserver-passwordless"
+          }
         }
       ]
     }
