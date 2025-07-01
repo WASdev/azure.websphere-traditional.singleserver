@@ -150,6 +150,7 @@ parametersJson=$( cat $parametersFilePath | jq '.parameters' )
 newOrExistingVnetForSingleServer=$( echo $parametersJson | jq '.newOrExistingVnetForSingleServer.value' | sed 's/"//g' )
 if [ "$newOrExistingVnetForSingleServer" != "existing" ]; then
     parametersJson=$( echo $parametersJson | jq 'del(.vnetForSingleServer)' )
+    parametersJson=$( echo $parametersJson | jq 'del(.newOrExistingVnetForSingleServer)' )
 fi
 useTrial=$( echo $parametersJson | jq '.useTrial.value' | sed 's/"//g' )
 parametersJson=$( echo $parametersJson | jq --argjson useTrial "$useTrial" '.useTrial.value = $useTrial' )
