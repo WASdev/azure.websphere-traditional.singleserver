@@ -55,6 +55,12 @@
         },
         "enablePswlessConnection": {
             "value": "${enablePswlessConnectionParam}"
+        },
+        "newOrExistingVnetForSingleServer": {
+            "value": "${newOrExistingVnetForSingleServer}"
+        },
+        "vnetForSingleServer": {
+            "value": "${vnetForSingleServer}"
         }
     }
 }

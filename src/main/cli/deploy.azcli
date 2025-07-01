@@ -146,6 +146,11 @@ fi
 
 #parameters JSON
 parametersJson=$( cat $parametersFilePath | jq '.parameters' )
+# get the value of newOrExistingVnetForSingleServer and check if it is "existing", if not,remove the vnetForSingleServer from the parameters
+newOrExistingVnetForSingleServer=$( echo $parametersJson | jq '.newOrExistingVnetForSingleServer.value' | sed 's/"//g' )
+if [ "$newOrExistingVnetForSingleServer" != "existing" ]; then
+    parametersJson=$( echo $parametersJson | jq 'del(.vnetForSingleServer)' )
+fi
 useTrial=$( echo $parametersJson | jq '.useTrial.value' | sed 's/"//g' )
 parametersJson=$( echo $parametersJson | jq --argjson useTrial "$useTrial" '.useTrial.value = $useTrial' )
 enableDB=$( echo $parametersJson | jq '.enableDB.value' | sed 's/"//g' )

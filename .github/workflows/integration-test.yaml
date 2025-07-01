@@ -122,6 +122,17 @@ jobs:
         id: azure-login
         with:
           creds: ${{ env.azureCredentials }}
+      - name: Provision Azure Vnet
+        id: vnet-provision
+        if: ${{ env.newOrExistingVnetForSingleServer == 'existing' }}
+        run: |
+          echo "Provisioning Azure Vnet with subnet"
+          az network vnet create \
+            --resource-group ${{ env.resourceGroup }} \
+            --name ${{ env.vnetForSingleServer.name }} \
+            --address-prefix 10.0.0.0/28 \
+            --subnet-name ${{ env.vnetForSingleServer.subnets.subnet1.name }} \
+            --subnet-prefix 10.0.0.0/29
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
         run: |
