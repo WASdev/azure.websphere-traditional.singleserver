@@ -29,6 +29,10 @@ on:
         required: true
         type: string
         default: 'eastus2'
+      configurations_for_ci:
+        description: "JSON string of environment variables used for CI"
+        required: false
+        default: '{}'
   # Allows you to run this workflow using GitHub APIs
   # PERSONAL_ACCESS_TOKEN=<GITHUB_PERSONAL_ACCESS_TOKEN>
   # REPO_NAME=WASdev/azure.websphere-traditional.singleserver
