@@ -8,6 +8,9 @@
 * [Liberty on ARO](https://github.com/WASdev/azure.liberty.aro)
 * [Liberty on AKS](https://github.com/WASdev/azure.liberty.aks)
 
+# Integration tests report
+[![CI Validation Workflows](https://github.com/azure-javaee/azure.websphere-traditional.singleserver/actions/workflows/ci-validation-workflows.yaml/badge.svg)](https://github.com/azure-javaee/azure.websphere-traditional.singleserver/actions/workflows/ci-validation-workflows.yaml)
+
 # Deploy RHEL 8.4 VM on Azure with IBM WebSphere Application Server traditional V9.0.5 single server
 
 ## Prerequisites
