@@ -74,6 +74,7 @@ env:
 jobs:
   integration-test:
     runs-on: ubuntu-latest
+    env: ${{ fromJson(inputs.configurations_for_ci) }}
     steps:
       - name: Set dynamic env from configurations_for_ci
         run: |
