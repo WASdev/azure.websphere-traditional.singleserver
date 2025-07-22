@@ -15,7 +15,8 @@
         {
           "scenario": "Deploy with passwordless SQL Server",
           "inputs": {
-            "databaseType": "sqlserver-passwordless"
+            "databaseType": "sqlserver-passwordless",
+            "configurations_for_ci": {}
           }
         },
         {
