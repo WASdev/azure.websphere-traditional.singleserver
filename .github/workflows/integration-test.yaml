@@ -328,7 +328,7 @@ jobs:
 
           if ${{ env.newOrExistingVnetForSingleServer == 'existing' }}; then
             newOrExistingVnetForSingleServer='existing'
-            vnetForSingleServer=${{ env.vnetForSingleServer }}
+            vnetForSingleServer=$(jq -c '.vnetForSingleServer' config.json)
           else
             newOrExistingVnetForSingleServer='new'
             vnetForSingleServer=""
