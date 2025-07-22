@@ -295,11 +295,21 @@ jobs:
             ibmUserPwd=""
           fi
 
+          if ${{ env.newOrExistingVnetForSingleServer == 'existing' }}; then
+            newOrExistingVnetForSingleServer='existing'
+            vnetForSingleServer=${{ env.vnetForSingleServer }}
+          else
+            newOrExistingVnetForSingleServer='new'
+            vnetForSingleServer=""
+          fi
+          
           cd ${{ env.repoName }}
           mvn -Dgit.repo=${{ env.userName }} -Dgit.tag=$GITHUB_REF_NAME \
             -DuseTrial=${useTrial} \
             -DibmUserId=${ibmUserId} \
             -DibmUserPwd=${ibmUserPwd} \
+            -DnewOrExistingVnetForSingleServer=${newOrExistingVnetForSingleServer} \
+            -DvnetForSingleServer=${vnetForSingleServer} \
             -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
             -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
             -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
