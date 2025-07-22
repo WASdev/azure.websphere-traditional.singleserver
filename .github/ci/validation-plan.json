@@ -11,31 +11,6 @@
               "entitled": "true"
             }
           }
-        },
-        {
-          "scenario": "Deploy with passwordless SQL Server",
-          "inputs": {
-            "databaseType": "sqlserver-passwordless",
-            "configurations_for_ci": {}
-          }
-        },
-        {
-          "scenario": "Bring your own VNET",
-          "inputs": {
-            "databaseType": "none",
-            "configurations_for_ci": {
-              "newOrExistingVnetForSingleServer": "existing",
-              "vnetForSingleServer": {
-                "name": "my-existing-vnet",
-                "newOrExisting": "existing",
-                "subnets": {
-                  "subnet1": {
-                    "name": "my-existing-sbnet-for-single-server"
-                  }
-                }
-              }
-            }
-          }
         }
       ]
     }
