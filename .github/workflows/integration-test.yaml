@@ -152,9 +152,12 @@ jobs:
           vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
           subnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.subnets.subnet1.name')
 
-          echo "Provisioning Azure Vnet with subnet"
+          echo resourceGroup=${{ env.testResourceGroup }}
+          echo vnetName=${vnetName}
+          echo subnetName=${subnetName}
+          
           az network vnet create \
-            --resource-group ${{ env.resourceGroup }} \
+            --resource-group ${{ env.testResourceGroup }} \
             --name ${vnetName} \
             --address-prefix 10.0.0.0/28 \
             --subnet-name ${subnetName} \
