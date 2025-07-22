@@ -158,6 +158,7 @@ jobs:
           
           az network vnet create \
             --resource-group ${{ env.testResourceGroup }} \
+            --location ${{ env.location }} \
             --name ${vnetName} \
             --address-prefix 10.0.0.0/28 \
             --subnet-name ${subnetName} \
