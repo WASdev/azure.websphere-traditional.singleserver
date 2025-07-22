@@ -149,6 +149,10 @@ jobs:
         run: |
           echo "Creating resource group: ${{ env.testResourceGroup }}"
           az group create --name ${{ env.testResourceGroup }} --location ${{ env.location }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+            detached: true
       - name: Provision Azure Vnet
         id: vnet-provision
         if: ${{ env.newOrExistingVnetForSingleServer == 'existing' }}
