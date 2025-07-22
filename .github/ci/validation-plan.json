@@ -4,6 +4,22 @@
       "workflow": "integration-test.yaml",
       "scenarios": [
         {
+          "scenario": "Deploy with existing WebSphere entitlement",
+          "inputs": {
+            "databaseType": "none",
+            "configurations_for_ci": {
+              "entitled": "true"
+            }
+          }
+        },
+        {
+          "scenario": "Deploy with passwordless SQL Server",
+          "inputs": {
+            "databaseType": "sqlserver-passwordless",
+            "configurations_for_ci": {}
+          }
+        },
+        {
           "scenario": "Bring your own VNET",
           "inputs": {
             "databaseType": "none",

@@ -149,10 +149,6 @@ jobs:
         run: |
           echo "Creating resource group: ${{ env.testResourceGroup }}"
           az group create --name ${{ env.testResourceGroup }} --location ${{ env.location }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-            detached: true
       - name: Provision Azure Vnet
         id: vnet-provision
         if: ${{ env.newOrExistingVnetForSingleServer == 'existing' }}
@@ -347,6 +343,11 @@ jobs:
             -DenableDB=${enableDB} -DdatabaseType=${databaseType} -DjdbcDataSourceJNDIName=jdbc/WebSphereCafeDB -DdsConnectionURL=${dsConnectionURL} -DdbUser=${dbUser} -DdbPassword=${{ env.dbPassword }} \
             -DenablePswlessConnectionParam=${enablePswlessConnection} \
             -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
+      - name: Remove unused parameters in
+        if: ${{ env.newOrExistingVnetForSingleServer != 'existing' }}
+        run: |
+          cd ${{ env.repoName }}/target/arm
+          jq 'del(.vnetForSingleServer)' parameters.json  > tmp.json && mv tmp.json parameters.json
       - name: Deploy a twas-single server on Azure VM
         run: |
           cd ${{ env.repoName }}/target/cli
