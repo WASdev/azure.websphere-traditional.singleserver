@@ -83,11 +83,21 @@ jobs:
             echo "Invalid JSON in configurations_for_ci"
             exit 1
           fi
-          for key in $(jq -r 'to_entries|map("\(.key)")|.[]' config.json); do
+          # Set environment variables for top-level keys only (non-nested)
+          for key in $(jq -r 'to_entries | map(select(.value | type != "object")) | map(.key) | .[]' config.json); do
             value=$(jq -r --arg k "$key" '.[$k]' config.json)
-            echo "$key=$value"
-            echo "$key=$value" >> $GITHUB_ENV
+            # Only set valid environment variable names
+            if [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+              echo "$key=$value"
+              echo "$key=$value" >> $GITHUB_ENV
+            fi
           done
+          
+          # Set nested objects as JSON strings for jq access
+          if jq -e '.vnetForSingleServer' config.json > /dev/null 2>&1; then
+            vnetForSingleServerJson=$(jq -c '.vnetForSingleServer' config.json)
+            echo "vnetForSingleServer=${vnetForSingleServerJson}" >> $GITHUB_ENV
+          fi
       - name: Get versions of external dependencies
         run: |
           curl -Lo external-deps-versions.properties https://raw.githubusercontent.com/Azure/azure-javaee-iaas/main/external-deps-versions.properties
@@ -139,11 +149,15 @@ jobs:
         if: ${{ env.newOrExistingVnetForSingleServer == 'existing' }}
         run: |
           echo "Provisioning Azure Vnet with subnet"
+          vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
+          subnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.subnets.subnet1.name')
+
+          echo "Provisioning Azure Vnet with subnet"
           az network vnet create \
             --resource-group ${{ env.resourceGroup }} \
-            --name ${{ env.vnetForSingleServer.name }} \
+            --name ${vnetName} \
             --address-prefix 10.0.0.0/28 \
-            --subnet-name ${{ env.vnetForSingleServer.subnets.subnet1.name }} \
+            --subnet-name ${subnetName} \
             --subnet-prefix 10.0.0.0/29
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
