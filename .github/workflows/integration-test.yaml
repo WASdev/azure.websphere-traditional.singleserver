@@ -377,6 +377,7 @@ jobs:
         run: |
           outputs=$(az deployment group show -n ${{ env.testDeploymentName }} -g ${{ env.testResourceGroup }} --query 'properties.outputs')
           adminSecuredConsole=$(echo $outputs | jq -r '.adminSecuredConsole.value')
+          echo "Admin Secured Console URL: ${adminSecuredConsole}"
           curl $adminSecuredConsole -k
           if [[ $? -ne 0 ]]; then
             echo "Failed to access ${adminSecuredConsole}."
