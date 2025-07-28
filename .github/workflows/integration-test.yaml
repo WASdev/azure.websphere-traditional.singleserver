@@ -403,6 +403,7 @@ jobs:
           snoopServletUrl=$(echo $outputs | jq -r '.snoopServletUrl.value')
           if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
             # get publicip from the nic
+            vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
             publicIp=$(az network nic show -g ${{ env.testResourceGroup }} -n ${vnetName}NIC --query "ipConfigurations[0].publicIpAddress.ipAddress" -o tsv)
             adminSecuredConsole="https://${publicIp}:9043/ibm/console/logon.jsp"
             hitCountServletUrl="https://${publicIp}:9043/snoop"
