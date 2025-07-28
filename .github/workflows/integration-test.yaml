@@ -282,6 +282,12 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --query "fullyQualifiedDomainName" -o tsv)
           echo "postgresqlHost=${host}" >> $GITHUB_ENV
+      - name: Remove unused parameters in
+        if: ${{ env.newOrExistingVnetForSingleServer != 'existing' }}
+        run: |
+          cd ${{ env.repoName }}/target/arm
+          echo "Remove unused parameters in parameters.json"
+          jq 'del(.vnetForSingleServer)' parameters.json  > tmp.json && mv tmp.json parameters.json
       - name: Build ${{ env.repoName }}
         run: |
           enableDB=false
@@ -352,11 +358,6 @@ jobs:
             -DenableDB=${enableDB} -DdatabaseType=${databaseType} -DjdbcDataSourceJNDIName=jdbc/WebSphereCafeDB -DdsConnectionURL=${dsConnectionURL} -DdbUser=${dbUser} -DdbPassword=${{ env.dbPassword }} \
             -DenablePswlessConnectionParam=${enablePswlessConnection} \
             -Dtest.args="-Test All" -Pbicep -Passembly -Ptemplate-validation-tests clean install
-      - name: Remove unused parameters in
-        if: ${{ env.newOrExistingVnetForSingleServer != 'existing' }}
-        run: |
-          cd ${{ env.repoName }}/target/arm
-          jq 'del(.vnetForSingleServer)' parameters.json  > tmp.json && mv tmp.json parameters.json
       - name: Deploy a twas-single server on Azure VM
         run: |
           cd ${{ env.repoName }}/target/cli
