@@ -404,7 +404,9 @@ jobs:
           if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
             # get publicip from the nic
             vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
+            echo "vnetName: ${vnetName}"
             publicIp=$(az network nic show -g ${{ env.testResourceGroup }} -n ${vnetName}NIC --query "ipConfigurations[0].publicIpAddress.ipAddress" -o tsv)
+            echo "publicIp: ${publicIp}"
             adminSecuredConsole="https://${publicIp}:9043/ibm/console/logon.jsp"
             hitCountServletUrl="https://${publicIp}:9043/snoop"
             snoopServletUrl="https://${publicIp}:9043/hitcount"  
@@ -532,9 +534,9 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: sleep 10 # wait for the notification job to finish
+      - name: sleep 20m # wait for the notification job to finish
         run: |
-          sleep 10m
+          sleep 20m
 
       - uses: azure/login@v1
         id: azure-login
