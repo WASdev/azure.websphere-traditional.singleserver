@@ -531,6 +531,10 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: sleep 10 # wait for the notification job to finish
+        run: |
+          sleep 10m
+
       - uses: azure/login@v1
         id: azure-login
         with:
