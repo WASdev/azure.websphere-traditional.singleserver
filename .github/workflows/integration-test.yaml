@@ -200,7 +200,7 @@ jobs:
               --source-address-prefixes '*' \
               --source-port-ranges '*' \
               --destination-address-prefixes '*' \
-              --destination-port-ranges 9043,8080 \
+              --destination-port-ranges 9043 8080 \
               --access Allow
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
