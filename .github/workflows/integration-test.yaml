@@ -168,40 +168,7 @@ jobs:
             --address-prefix 10.0.0.0/28 \
             --subnet-name ${subnetName} \
             --subnet-prefix 10.0.0.0/29
-          # assign a public IP to the subnet
-          az network public-ip create \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${vnetName}PublicIP \
-              --sku Standard
-          # Create a NIC with the public IP and subnet
-          az network nic create \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${vnetName}NIC \
-              --vnet-name ${vnetName} \
-              --subnet ${subnetName} \
-              --public-ip-address ${vnetName}PublicIP
-          # Create a network security group and associate it with the NIC
-          az network nsg create \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${vnetName}NSG
-          # Associate the NSG with the NIC
-          az network nic update \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${vnetName}NIC \
-              --network-security-group ${vnetName}NSG
-          # Open port 22,9043 in the NSG
-          az network nsg rule create \
-              --resource-group ${{ env.testResourceGroup }} \
-              --nsg-name ${vnetName}NSG \
-              --name AllowCall \
-              --protocol Tcp \
-              --direction Inbound \
-              --priority 1000 \
-              --source-address-prefixes '*' \
-              --source-port-ranges '*' \
-              --destination-address-prefixes '*' \
-              --destination-port-ranges 9043 8080 \
-              --access Allow
+
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
         run: |
@@ -402,22 +369,12 @@ jobs:
           hitCountServletUrl=$(echo $outputs | jq -r '.hitCountServletUrl.value')
           snoopServletUrl=$(echo $outputs | jq -r '.snoopServletUrl.value')
           if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
-            # get publicip from the nic
-            vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
-            echo "vnetName: ${vnetName}"
-            publicIp=$(az network public-ip show \
-              --resource-group ${{ env.testResourceGroup }} \
-              --name ${vnetName}PublicIP \
-              --query "ipAddress" -o tsv)
-            echo "publicIp: ${publicIp}"
-            adminSecuredConsole="https://${publicIp}:9043/ibm/console/logon.jsp"
-            hitCountServletUrl="https://${publicIp}:9043/snoop"
-            snoopServletUrl="https://${publicIp}:9043/hitcount"  
+             # it will not contain public IP if the vnet is existing, skip current step
+             exit 0
           fi
           echo "Admin Secured Console URL: ${adminSecuredConsole}"
           echo "Hit Count Servlet URL: ${hitCountServletUrl}"
           echo "Snoop Servlet URL: ${snoopServletUrl}"
-          
           
           curl $adminSecuredConsole -k
           if [[ $? -ne 0 ]]; then
@@ -436,6 +393,10 @@ jobs:
           fi
       - name: Install and verify websphere-cafe
         run: |
+          if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
+             # it will not contain public IP if the vnet is existing, skip current step
+             exit 0
+          fi 
           nsgName=$(az network nsg list -g ${testResourceGroup} --query "[?contains(name, '-nsg')].name" -o tsv)
           publicIp=$(az vm list -g ${testResourceGroup} -d --query "[?contains(name, '-vm')].publicIps" -o tsv)
           vmName=$(az vm list -g ${testResourceGroup} --query "[?contains(name, '-vm')].name" -o tsv)
@@ -537,10 +498,6 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: sleep 20m # wait for the notification job to finish
-        run: |
-          sleep 20m
-
       - uses: azure/login@v1
         id: azure-login
         with:
