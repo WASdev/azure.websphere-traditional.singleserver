@@ -173,15 +173,17 @@ jobs:
               --resource-group ${{ env.testResourceGroup }} \
               --name ${vnetName}PublicIP \
               --sku Standard
-          # associate the public IP to the subnet
-          az network vnet subnet update \
+          # Create a NIC with the public IP and subnet
+          az network nic create \
               --resource-group ${{ env.testResourceGroup }} \
+              --name ${vnetName}NIC \
               --vnet-name ${vnetName} \
-              --name ${subnetName} \
+              --subnet ${subnetName} \
               --public-ip-address ${vnetName}PublicIP
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
         run: |
+          
           az vm create \
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --image "Canonical:UbuntuServer:18.04-LTS:latest" \
@@ -189,6 +191,13 @@ jobs:
             --nsg-rule NONE --enable-agent true \
             --vnet-name ${{ env.dbInstanceName }}VNET --enable-auto-update false \
             --tags SkipASMAzSecPack=true SkipNRMSCorp=true SkipNRMSDatabricks=true SkipNRMSDB=true SkipNRMSHigh=true SkipNRMSMedium=true SkipNRMSRDPSSH=true SkipNRMSSAW=true SkipNRMSMgmt=true
+          
+          # update vm with the existing nic
+            if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
+                vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
+                az vm nic set --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.dbInstanceName }} --nics ${vnetName}NIC
+            fi
+          
           az vm open-port -g ${{ env.testResourceGroup }} -n ${{ env.dbInstanceName }} --port 50000 --priority 100
           az vm extension set --name CustomScript \
             --extension-instance-name install-db2-in-docker \
