@@ -185,7 +185,7 @@ jobs:
               --resource-group ${{ env.testResourceGroup }} \
               --name ${vnetName}NSG
           # Associate the NSG with the NIC
-          az network nic set \
+          az network nic update \
               --resource-group ${{ env.testResourceGroup }} \
               --name ${vnetName}NIC \
               --network-security-group ${vnetName}NSG
@@ -215,10 +215,10 @@ jobs:
             --tags SkipASMAzSecPack=true SkipNRMSCorp=true SkipNRMSDatabricks=true SkipNRMSDB=true SkipNRMSHigh=true SkipNRMSMedium=true SkipNRMSRDPSSH=true SkipNRMSSAW=true SkipNRMSMgmt=true
           
           # update vm with the existing nic
-            if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
-                vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
-                az vm nic set --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.dbInstanceName }} --nics ${vnetName}NIC
-            fi
+          if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
+              vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
+              az vm nic set --resource-group ${{ env.testResourceGroup }} --vm-name ${{ env.dbInstanceName }} --nics ${vnetName}NIC
+          fi
           
           az vm open-port -g ${{ env.testResourceGroup }} -n ${{ env.dbInstanceName }} --port 50000 --priority 100
           az vm extension set --name CustomScript \
@@ -399,19 +399,30 @@ jobs:
         run: |
           outputs=$(az deployment group show -n ${{ env.testDeploymentName }} -g ${{ env.testResourceGroup }} --query 'properties.outputs')
           adminSecuredConsole=$(echo $outputs | jq -r '.adminSecuredConsole.value')
+          hitCountServletUrl=$(echo $outputs | jq -r '.hitCountServletUrl.value')
+          snoopServletUrl=$(echo $outputs | jq -r '.snoopServletUrl.value')
+          if [ "${{ env.newOrExistingVnetForSingleServer }}" == "existing" ]; then
+            # get publicip from the nic
+            publicIp=$(az network nic show -g ${{ env.testResourceGroup }} -n ${vnetName}NIC --query "ipConfigurations[0].publicIpAddress.ipAddress" -o tsv)
+            adminSecuredConsole="https://${publicIp}:9043/ibm/console/logon.jsp"
+            hitCountServletUrl="https://${publicIp}:9043/snoop"
+            snoopServletUrl="https://${publicIp}:9043/hitcount"  
+          fi
           echo "Admin Secured Console URL: ${adminSecuredConsole}"
+          echo "Hit Count Servlet URL: ${hitCountServletUrl}"
+          echo "Snoop Servlet URL: ${snoopServletUrl}"
+          
+          
           curl $adminSecuredConsole -k
           if [[ $? -ne 0 ]]; then
             echo "Failed to access ${adminSecuredConsole}."
             exit 1
           fi
-          hitCountServletUrl=$(echo $outputs | jq -r '.hitCountServletUrl.value')
           curl $hitCountServletUrl -k
           if [[ $? -ne 0 ]]; then
             echo "Failed to access ${hitCountServletUrl}."
             exit 1
           fi
-          snoopServletUrl=$(echo $outputs | jq -r '.snoopServletUrl.value')
           curl $snoopServletUrl -k
           if [[ $? -ne 0 ]]; then
             echo "Failed to access ${snoopServletUrl}."
