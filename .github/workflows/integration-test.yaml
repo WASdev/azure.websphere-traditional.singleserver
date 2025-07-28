@@ -285,7 +285,9 @@ jobs:
       - name: Remove unused parameters in
         if: ${{ env.newOrExistingVnetForSingleServer != 'existing' }}
         run: |
+          echo "current directory: $(pwd)"
           cd ${{ env.repoName }}/target/arm
+          echo "current directory: $(pwd)"
           echo "Remove unused parameters in parameters.json"
           jq 'del(.vnetForSingleServer)' parameters.json  > tmp.json && mv tmp.json parameters.json
       - name: Build ${{ env.repoName }}
