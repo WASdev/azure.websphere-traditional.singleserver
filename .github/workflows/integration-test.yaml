@@ -180,6 +180,28 @@ jobs:
               --vnet-name ${vnetName} \
               --subnet ${subnetName} \
               --public-ip-address ${vnetName}PublicIP
+          # Create a network security group and associate it with the NIC
+          az network nsg create \
+              --resource-group ${{ env.testResourceGroup }} \
+              --name ${vnetName}NSG
+          # Associate the NSG with the NIC
+          az network nic set \
+              --resource-group ${{ env.testResourceGroup }} \
+              --name ${vnetName}NIC \
+              --network-security-group ${vnetName}NSG
+          # Open port 22,9043 in the NSG
+            az network nsg rule create \
+                --resource-group ${{ env.testResourceGroup }} \
+                --nsg-name ${vnetName}NSG \
+                --name AllowCall \
+                --protocol Tcp \
+                --direction Inbound \
+                --priority 1000 \
+                --source-address-prefixes '*' \
+                --source-port-ranges '*' \
+                --destination-address-prefixes '*' \
+                --destination-port-ranges 9043,8080 \
+                --access Allow
       - name: Deploy an IBM DB2 server on Azure VM
         if: ${{ inputs.databaseType == 'db2' || github.event.client_payload.databaseType == 'db2' }}
         run: |
