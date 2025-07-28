@@ -4,11 +4,20 @@
       "workflow": "integration-test.yaml",
       "scenarios": [
         {
-          "scenario": "Deploy with existing WebSphere entitlement",
+          "scenario": "Bring your own VNET",
           "inputs": {
             "databaseType": "none",
             "configurations_for_ci": {
-              "entitled": "true"
+              "newOrExistingVnetForSingleServer": "existing",
+              "vnetForSingleServer": {
+                "name": "my-existing-vnet",
+                "newOrExisting": "existing",
+                "subnets": {
+                  "subnet1": {
+                    "name": "my-existing-sbnet-for-single-server"
+                  }
+                }
+              }
             }
           }
         }
