@@ -405,7 +405,10 @@ jobs:
             # get publicip from the nic
             vnetName=$(echo '${{ env.vnetForSingleServer }}' | jq -r '.name')
             echo "vnetName: ${vnetName}"
-            publicIp=$(az network nic show -g ${{ env.testResourceGroup }} -n ${vnetName}NIC --query "ipConfigurations[0].publicIpAddress.ipAddress" -o tsv)
+            publicIp=$(az network public-ip show \
+              --resource-group ${{ env.testResourceGroup }} \
+              --name ${vnetName}PublicIP \
+              --query "ipAddress" -o tsv)
             echo "publicIp: ${publicIp}"
             adminSecuredConsole="https://${publicIp}:9043/ibm/console/logon.jsp"
             hitCountServletUrl="https://${publicIp}:9043/snoop"
