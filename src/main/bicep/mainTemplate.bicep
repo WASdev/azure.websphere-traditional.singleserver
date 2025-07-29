@@ -111,6 +111,9 @@ param enablePswlessConnection bool = false
 @description('Managed identity that has access to database')
 param dbIdentity object = {}
 
+@description('${label.tagsLabel}')
+param tagsByResource object = {}
+
 param guidValue string = newGuid()
 
 var uamiClientId = enablePswlessConnection ? reference(items(dbIdentity.userAssignedIdentities)[0].key, '${azure.apiVersionForIdentity}', 'full').properties.clientId : 'NA'
@@ -138,6 +141,15 @@ var name_virtualMachine = '${const_dnsLabelPrefix}-vm'
 // Work around arm-ttk test "Variables Must Be Referenced"
 var configBase64 = loadFileAsBase64('config.json')
 var config = base64ToJson(configBase64)
+
+var _objTagsByResource = {
+  '${identifier.virtualMachines}': contains(tagsByResource, '${identifier.virtualMachines}') ? tagsByResource['${identifier.virtualMachines}'] : json('{}')
+  '${identifier.virtualMachinesExtensions}': contains(tagsByResource, '${identifier.virtualMachinesExtensions}') ? tagsByResource['${identifier.virtualMachinesExtensions}'] : json('{}')
+  '${identifier.virtualNetworks}': contains(tagsByResource, '${identifier.virtualNetworks}') ? tagsByResource['${identifier.virtualNetworks}'] : json('{}')
+  '${identifier.networkInterfaces}': contains(tagsByResource, '${identifier.networkInterfaces}') ? tagsByResource['${identifier.networkInterfaces}'] : json('{}')
+  '${identifier.networkSecurityGroups}': contains(tagsByResource, '${identifier.networkSecurityGroups}') ? tagsByResource['${identifier.networkSecurityGroups}'] : json('{}')
+  '${identifier.publicIPAddresses}': contains(tagsByResource, '${identifier.publicIPAddresses}') ? tagsByResource['${identifier.publicIPAddresses}'] : json('{}')
+}
 
 module partnerCenterPid './modules/_pids/_empty.bicep' = {
   name: 'pid-d287697e-d90f-485a-9fe0-c2f12676973d-partnercenter'
@@ -179,6 +191,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@${azure.a
       }
     ]
   }
+  tags: _objTagsByResource['${identifier.networkSecurityGroups}']
 }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@${azure.apiVersionForVirtualNetworks}' = if (const_newVNet) {
@@ -200,6 +213,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@${azure.apiVersionFor
       }
     ]
   }
+  tags: _objTagsByResource['${identifier.virtualNetworks}']  
 }
 
 resource existingVNet 'Microsoft.Network/virtualNetworks@${azure.apiVersionForVirtualNetworks}' existing = if (!const_newVNet) {
@@ -221,6 +235,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersion
       domainNameLabel: concat(toLower(const_dnsLabelPrefix))
     }
   }
+  tags: _objTagsByResource['${identifier.publicIPAddresses}']  
 }
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = if (const_newVNet) {
@@ -248,6 +263,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersio
   dependsOn: [
     virtualNetwork
   ]
+  tags: _objTagsByResource['${identifier.networkInterfaces}']  
 }
 
 resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = if (!const_newVNet) {
@@ -266,6 +282,7 @@ resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@${azure.ap
       }
     ]
   }
+  tags: _objTagsByResource['${identifier.virtualMachines}']  
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionForVirtualMachines}' = {
@@ -311,6 +328,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionFor
     publisher: config.imagePublisher
     product: config.twasImageOffer
   }
+  tags: _objTagsByResource['${identifier.virtualMachines}']  
 }
 
 module singleServerVMCreated './modules/_pids/_empty.bicep' = {
@@ -352,6 +370,7 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@${azure.apiVe
       commandToExecute: 'sh install.sh${const_arguments}'
     }
   }
+  tags: _objTagsByResource['${identifier.virtualMachinesExtensions}']  
 }
 
 module dbConnectionEndPid './modules/_pids/_empty.bicep' = if (enableDB) {
