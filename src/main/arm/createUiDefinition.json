@@ -588,7 +588,7 @@
             "dbPassword": "[steps('section_database').databaseConnectionInfo.dbPassword]",
             "enablePswlessConnection": "[bool(steps('section_database').databaseConnectionInfo.enablePswlessConnection)]",
             "dbIdentity": "[steps('section_database').databaseConnectionInfo.dbIdentity]",
-            "tagsByResource": "[steps('section_tags').tagsByResource]"
+            "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }
 }
