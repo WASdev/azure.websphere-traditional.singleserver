@@ -282,11 +282,6 @@ jobs:
             --resource-group ${{ env.testResourceGroup }} --name ${{ env.dbInstanceName }} \
             --query "fullyQualifiedDomainName" -o tsv)
           echo "postgresqlHost=${host}" >> $GITHUB_ENV
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 120
-        with:
-          detached: true
       - name: Build ${{ env.repoName }}
         run: |
           enableDB=false
