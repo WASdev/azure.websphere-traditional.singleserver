@@ -115,6 +115,7 @@ param dbIdentity object = {}
 param tagsByResource object = {}
 
 param guidValue string = newGuid()
+param guidTag string = newGuid()
 
 var uamiClientId = enablePswlessConnection ? reference(items(dbIdentity.userAssignedIdentities)[0].key, '${azure.apiVersionForIdentity}', 'full').properties.clientId : 'NA'
 var const_arguments = format(' {0} {1} {2} {3} {4} {5} {6} {7} {8} {9}', wasUsername, wasPassword, enableDB, databaseType, base64(jdbcDataSourceJNDIName), base64(dsConnectionURL), base64(dbUser), base64(dbPassword), enablePswlessConnection, uamiClientId)
@@ -133,7 +134,6 @@ var const_linuxConfiguration = {
 var const_newVNet = (newOrExistingVnetForSingleServer == 'new') ? true : false
 var const_scriptLocation = uri(_artifactsLocation, 'scripts/')
 var name_networkInterface = '${const_dnsLabelPrefix}-if'
-var name_networkInterfaceNoPubIp = '${const_dnsLabelPrefix}-if-no-pub-ip'
 var name_networkSecurityGroup = '${const_dnsLabelPrefix}-nsg'
 var name_publicIPAddress = '${const_dnsLabelPrefix}-ip'
 var name_virtualMachine = '${const_dnsLabelPrefix}-vm'
@@ -213,7 +213,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@${azure.apiVersionFor
       }
     ]
   }
-  tags: _objTagsByResource['${identifier.virtualNetworks}']  
+  tags: _objTagsByResource['${identifier.virtualNetworks}']
 }
 
 resource existingVNet 'Microsoft.Network/virtualNetworks@${azure.apiVersionForVirtualNetworks}' existing = if (!const_newVNet) {
@@ -226,7 +226,7 @@ resource existingSubnet 'Microsoft.Network/virtualNetworks/subnets@${azure.apiVe
   name: vnetForSingleServer.subnets.subnet1.name
 }
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersionForPublicIPAddresses}' = if (const_newVNet) {
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersionForPublicIPAddresses}' = {
   name: name_publicIPAddress
   location: location
   properties: {
@@ -235,10 +235,12 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersion
       domainNameLabel: concat(toLower(const_dnsLabelPrefix))
     }
   }
-  tags: _objTagsByResource['${identifier.publicIPAddresses}']  
+  tags: const_newVNet ? _objTagsByResource['${identifier.publicIPAddresses}'] : union(_objTagsByResource['${identifier.publicIPAddresses}'], {
+    '${guidTag}': ''
+  })
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = if (const_newVNet) {
+resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = {
   name: name_networkInterface
   location: location
   properties: {
@@ -251,7 +253,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersio
             id: publicIPAddress.id
           }
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetForSingleServer.name, vnetForSingleServer.subnets.subnet1.name)
+            id: const_newVNet ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetForSingleServer.name, vnetForSingleServer.subnets.subnet1.name) : existingSubnet.id
           }
         }
       }
@@ -262,27 +264,9 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@${azure.apiVersio
   }
   dependsOn: [
     virtualNetwork
+    existingSubnet
   ]
-  tags: _objTagsByResource['${identifier.networkInterfaces}']  
-}
-
-resource networkInterfaceNoPubIp 'Microsoft.Network/networkInterfaces@${azure.apiVersionForNetworkInterfaces}' = if (!const_newVNet) {
-  name: name_networkInterfaceNoPubIp
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'ipconfig1'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          subnet: {
-            id: existingSubnet.id
-          }
-        }
-      }
-    ]
-  }
-  tags: _objTagsByResource['${identifier.virtualMachines}']  
+  tags: _objTagsByResource['${identifier.networkInterfaces}']
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionForVirtualMachines}' = {
@@ -318,7 +302,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionFor
     networkProfile: {
       networkInterfaces: [
         {
-          id: const_newVNet ? networkInterface.id : networkInterfaceNoPubIp.id
+          id: networkInterface.id
         }
       ]
     }
@@ -328,7 +312,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@${azure.apiVersionFor
     publisher: config.imagePublisher
     product: config.twasImageOffer
   }
-  tags: _objTagsByResource['${identifier.virtualMachines}']  
+  tags: _objTagsByResource['${identifier.virtualMachines}']
 }
 
 module singleServerVMCreated './modules/_pids/_empty.bicep' = {
@@ -370,7 +354,7 @@ resource vmExtension 'Microsoft.Compute/virtualMachines/extensions@${azure.apiVe
       commandToExecute: 'sh install.sh${const_arguments}'
     }
   }
-  tags: _objTagsByResource['${identifier.virtualMachinesExtensions}']  
+  tags: _objTagsByResource['${identifier.virtualMachinesExtensions}']
 }
 
 module dbConnectionEndPid './modules/_pids/_empty.bicep' = if (enableDB) {
@@ -389,6 +373,6 @@ module singleServerEndPid './modules/_pids/_empty.bicep' = {
   ]
 }
 
-output adminSecuredConsole string = uri(format('https://{0}:9043/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'ibm/console/logon.jsp')
-output snoopServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'snoop')
-output hitCountServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterfaceNoPubIp).ipConfigurations[0].properties.privateIPAddress), 'hitcount')
+output adminSecuredConsole string = uri(format('https://{0}:9043/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterface).ipConfigurations[0].properties.privateIPAddress), 'ibm/console/logon.jsp')
+output snoopServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterface).ipConfigurations[0].properties.privateIPAddress), 'snoop')
+output hitCountServletUrl string = uri(format('https://{0}:9443/', const_newVNet ? publicIPAddress.properties.dnsSettings.fqdn : reference(name_networkInterface).ipConfigurations[0].properties.privateIPAddress), 'hitcount')
