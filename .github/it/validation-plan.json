@@ -7,7 +7,7 @@
           "scenario": "Deploy with existing WebSphere entitlement",
           "inputs": {
             "databaseType": "none",
-            "configurations_for_ci": {
+            "configurations_for_it": {
               "entitled": "true"
             }
           }
@@ -16,14 +16,14 @@
           "scenario": "Deploy with passwordless SQL Server",
           "inputs": {
             "databaseType": "sqlserver-passwordless",
-            "configurations_for_ci": {}
+            "configurations_for_it": {}
           }
         },
         {
           "scenario": "Bring your own VNET",
           "inputs": {
             "databaseType": "none",
-            "configurations_for_ci": {
+            "configurations_for_it": {
               "newOrExistingVnetForSingleServer": "existing",
               "vnetForSingleServer": {
                 "name": "my-existing-vnet",
