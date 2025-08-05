@@ -137,6 +137,14 @@ var name_networkInterface = '${const_dnsLabelPrefix}-if'
 var name_networkSecurityGroup = '${const_dnsLabelPrefix}-nsg'
 var name_publicIPAddress = '${const_dnsLabelPrefix}-ip'
 var name_virtualMachine = '${const_dnsLabelPrefix}-vm'
+var name_postDeploymentDsName = format('postdeploymentds{0}', guidValue)
+
+var obj_uamiForDeploymentScript = !const_newVNet ? {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${uamiDeployment.outputs.uamiIdForDeploymentScript}': {}
+  }
+} : {}
 
 // Work around arm-ttk test "Variables Must Be Referenced"
 var configBase64 = loadFileAsBase64('config.json')
@@ -164,6 +172,13 @@ module shareCompanyNamePid './modules/_pids/_empty.bicep' = if (useTrial && shar
 module singleServerStartPid './modules/_pids/_empty.bicep' = {
   name: (useTrial ? config.singleserverTrialStart : config.singleserverStart)
   params: {}
+}
+
+module uamiDeployment 'modules/_uami/_uamiAndRoles.bicep' = if (!const_newVNet) {
+  name: 'uami-deployment'
+  params: {
+    location: location
+  }
 }
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@${azure.apiVersionForNetworkSecurityGroups}' = if (const_newVNet) {
@@ -365,11 +380,28 @@ module dbConnectionEndPid './modules/_pids/_empty.bicep' = if (enableDB) {
   ]
 }
 
+module postDeployment 'modules/_deployment-scripts/_dsPostDeployment.bicep' = if (!const_newVNet) {
+  name: name_postDeploymentDsName
+  params: {
+    name: name_postDeploymentDsName
+    location: location
+    _artifactsLocation: _artifactsLocation
+    _artifactsLocationSasToken: _artifactsLocationSasToken
+    identity: obj_uamiForDeploymentScript
+    resourceGroupName: resourceGroup().name
+    guidTag: guidTag
+  }
+  dependsOn: [
+    vmExtension
+  ]
+}
+
 module singleServerEndPid './modules/_pids/_empty.bicep' = {
   name: (useTrial ? config.singleserverTrialEnd : config.singleserverEnd)
   params: {}
   dependsOn: [
     vmExtension
+    postDeployment
   ]
 }
 
