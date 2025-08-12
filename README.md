@@ -9,7 +9,7 @@
 * [Liberty on AKS](https://github.com/WASdev/azure.liberty.aks)
 
 # Integration tests report
-[![IT Validation Workflows](https://github.com/WASdev/azure.websphere-traditional.singleserver/actions/workflows/it-validation-workflows.yaml/badge.svg)](https://github.com/azure-javaee/azure.websphere-traditional.singleserver/actions/workflows/it-validation-workflows.yaml)
+[![IT Validation Workflows](https://github.com/WASdev/azure.websphere-traditional.singleserver/actions/workflows/it-validation-workflows.yaml/badge.svg)](https://github.com/WASdev/azure.websphere-traditional.singleserver/actions/workflows/it-validation-workflows.yaml)
 
 # Deploy RHEL 8.4 VM on Azure with IBM WebSphere Application Server traditional V9.0.5 single server
 
