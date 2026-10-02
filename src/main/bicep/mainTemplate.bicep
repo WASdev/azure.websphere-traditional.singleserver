@@ -244,8 +244,11 @@ resource existingSubnet 'Microsoft.Network/virtualNetworks/subnets@${azure.apiVe
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@${azure.apiVersionForPublicIPAddresses}' = {
   name: name_publicIPAddress
   location: location
+  sku: {
+    name: 'Standard'
+  }
   properties: {
-    publicIPAllocationMethod: 'Dynamic'
+    publicIPAllocationMethod: 'Static'
     dnsSettings: {
       domainNameLabel: concat(toLower(const_dnsLabelPrefix))
     }
