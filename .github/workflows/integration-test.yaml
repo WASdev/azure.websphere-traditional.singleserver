@@ -346,7 +346,7 @@ jobs:
             -DibmUserPwd=${ibmUserPwd} \
             -DnewOrExistingVnetForSingleServer=${newOrExistingVnetForSingleServer} \
             -DvnetForSingleServer=${vnetForSingleServer} \
-            -DvmSize=Standard_D2_v3 -DdnsLabelPrefix=was \
+            -DvmSize=Standard_D2s_v3 -DdnsLabelPrefix=was \
             -DadminUsername=${{ env.vmAdminId }} -DadminPasswordOrKey=${{ env.vmAdminPassword }} \
             -DauthenticationType=password -DwasUsername=${{ env.vmAdminId }} -DwasPassword=${{ env.vmAdminPassword }} \
             -DenableDB=${enableDB} -DdatabaseType=${databaseType} -DjdbcDataSourceJNDIName=jdbc/WebSphereCafeDB -DdsConnectionURL=${dsConnectionURL} -DdbUser=${dbUser} -DdbPassword=${{ env.dbPassword }} \
