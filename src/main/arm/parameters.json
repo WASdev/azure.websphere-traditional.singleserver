@@ -60,7 +60,22 @@
             "value": "${newOrExistingVnetForSingleServer}"
         },
         "vnetForSingleServer": {
-            "value": ${vnetForSingleServer}
+            "value": {
+                "name": "twassingle-vnet",
+                "resourceGroup": "[resourceGroup().name]",
+                "addressPrefixes": [
+                    "10.0.0.32/28"
+                ],
+                "addressPrefix": "10.0.0.32/28",
+                "newOrExisting": "new",
+                "subnets": {
+                    "subnet1": {
+                        "name": "twassingle-subnet",
+                        "addressPrefix": "10.0.0.32/29",
+                        "startAddress": "10.0.0.36"
+                    }
+                }
+            }
         }
     }
 }
